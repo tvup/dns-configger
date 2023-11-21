@@ -14,6 +14,11 @@ class CreateDnsRecord extends Component
 
     public function save()
     {
+        $this->validate([
+           'type' => 'required',
+            'data' => 'required',
+        ]);
+
         $model = new DnsRecord();
         $model->type = $this->type;
         $model->data = $this->data;
