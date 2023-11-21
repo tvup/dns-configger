@@ -6,7 +6,6 @@ use Illuminate\Support\ServiceProvider;
 
 class LaravelFejlvarpServiceProvider extends ServiceProvider
 {
-
     public function register()
     {
         $this->app->bind(

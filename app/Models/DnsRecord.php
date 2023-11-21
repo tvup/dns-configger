@@ -7,20 +7,29 @@ use App\Services\DigitalOceanService;
 class DnsRecord
 {
     public $id;
+
     public $type;
+
     public $name;
+
     public $data;
+
     public $priority;
+
     public $port;
+
     public $ttl;
+
     public $weight;
+
     public $flags;
+
     public $tag;
 
-
-    public function all() {
+    public function all()
+    {
         $array = [];
-        foreach(app(DigitalOceanService::class)->getDnsRecords() as $dnsRecord) {
+        foreach (app(DigitalOceanService::class)->getDnsRecords() as $dnsRecord) {
             $model = new DnsRecord();
             $model->id = $dnsRecord->id;
             $model->type = $dnsRecord->type;
@@ -34,11 +43,12 @@ class DnsRecord
             $model->tag = $dnsRecord->tag;
             $array[] = $model;
         }
+
         return collect($array);
     }
 
-
-    public function find($id) {
+    public function find($id)
+    {
         $dnsRecord = app(DigitalOceanService::class)->getDnsRecord($id);
         $model = new DnsRecord();
         $model->id = $dnsRecord->id;
@@ -55,11 +65,13 @@ class DnsRecord
         return $model;
     }
 
-    public function delete() {
+    public function delete()
+    {
         app(DigitalOceanService::class)->deleteDnsRecord($this);
     }
 
-    public function create() {
+    public function create()
+    {
         $jsonObject = app(DigitalOceanService::class)->createDnsRecord($this);
         $this->id = $jsonObject->id;
         $this->type = $jsonObject->type;
@@ -73,7 +85,8 @@ class DnsRecord
         $this->tag = $jsonObject->tag;
     }
 
-    public function update() {
+    public function update()
+    {
         $jsonObject = app(DigitalOceanService::class)->updateDnsRecord($this);
         $this->id = $jsonObject->id;
         $this->type = $jsonObject->type;
@@ -85,6 +98,5 @@ class DnsRecord
         $this->weight = $jsonObject->weight;
         $this->flags = $jsonObject->flags;
         $this->tag = $jsonObject->tag;
-
     }
 }

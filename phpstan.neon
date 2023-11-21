@@ -1,0 +1,19 @@
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+    paths:
+        - app/
+
+    # Level 9 is the highest level
+    level: 1
+
+    ignoreErrors: # All these errors are weird to fix. We will do that lastly,
+
+#
+#    excludePaths:
+#        - ./*/*/FileToBeExcluded.php
+#
+#    checkMissingIterableValueType: false
+
+    checkGenericClassInNonGenericObjectType: false

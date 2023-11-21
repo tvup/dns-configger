@@ -2,29 +2,36 @@
 
 namespace App\Livewire;
 
+use App\Models\DnsRecord;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
-use App\Models\DnsRecord;
-
 
 class CreateDnsRecord extends Component
 {
     #[Validate('required|in:A,AAAA,CAA,CNAME,MX,NS,SOA,SRV,TXT', message: ['type.in'=>'Type must be one of A, AAAA, CAA, CNAME, MX, NS, SOA, SRV, TXT'])]
     public $type = '';
+
     #[Validate('required')]
     public $name = '';
+
     #[Validate('required')]
     public $data = '';
+
     #[Validate('nullable|integer')]
-    public $priority='';
+    public $priority = '';
+
     #[Validate('nullable|integer')]
     public $port;
+
     #[Validate('nullable|integer')]
     public $ttl;
+
     #[Validate('nullable|integer')]
     public $weight;
+
     #[Validate('nullable|integer|min:0|max:255')]
     public $flags;
+
     #[Validate('nullable|in:issue,issuewild,iodef', message: ['tag.in'=>'Tag must be one of issue, issuewild, iodef'])]
     public $tag;
 
@@ -45,10 +52,10 @@ class CreateDnsRecord extends Component
             $model->create();
         } catch (\Exception $e) {
             session()->flash('message', 'Error: ' . $e->getMessage());
+
             return;
         }
         $this->redirect('/dns-records/edit/' . $model->id);
-
     }
 
     public function render()

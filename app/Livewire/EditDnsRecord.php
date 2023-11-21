@@ -9,22 +9,31 @@ use Livewire\Component;
 class EditDnsRecord extends Component
 {
     public $id = '';
+
     #[Validate('required|in:A,AAAA,CAA,CNAME,MX,NS,SOA,SRV,TXT', message: ['type.in'=>'Type must be one of A, AAAA, CAA, CNAME, MX, NS, SOA, SRV, TXT'])]
     public $type = '';
+
     #[Validate('required')]
     public $name = '';
+
     #[Validate('required')]
     public $data = '';
+
     #[Validate('nullable|integer')]
-    public $priority='';
+    public $priority = '';
+
     #[Validate('nullable|integer')]
     public $port;
+
     #[Validate('nullable|integer')]
     public $ttl;
+
     #[Validate('nullable|integer')]
     public $weight;
+
     #[Validate('nullable|integer|min:0|max:255')]
     public $flags;
+
     #[Validate('nullable|in:issue,issuewild,iodef', message: ['tag.in'=>'Tag must be one of issue, issuewild, iodef'])]
     public $tag;
 
@@ -46,6 +55,7 @@ class EditDnsRecord extends Component
             $model->update();
         } catch (\Exception $e) {
             session()->flash('message', 'Error: ' . $e->getMessage());
+
             return;
         }
         session()->flash('message', 'Post Updated Successfully.');
@@ -60,13 +70,15 @@ class EditDnsRecord extends Component
         $this->tag = $model->tag;
     }
 
-    public function mount() {
+    public function mount()
+    {
         $this->id = request()->route()->parameter('id');
         $model = new DnsRecord();
         try {
             $model = $model->find($this->id);
         } catch (\Exception $e) {
             session()->flash('message', 'Error: ' . $e->getMessage());
+
             return;
         }
         $this->type = $model->type;

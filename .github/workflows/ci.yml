@@ -1,0 +1,47 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: /tmp/composer-cache
+          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+
+      - uses: php-actions/composer@v6
+        with:
+          php_version: "8.2"
+      - name: Create Directories
+        run: mkdir -p storage/framework/cache  && mkdir -p storage/framework/views && mkdir -p storage/framework/sessions
+      - name: Directory Permissions
+        run: sudo chmod -R 777 storage/ bootstrap/cache
+      - name: Install NPM
+        run: npm install && npm run build
+      - name: Generate key
+        run: php artisan key:generate
+      - name: Create Database
+        run: |
+          touch testing
+          php artisan migrate
+      - name: Clear caches
+        run: |
+          php artisan cache:clear
+          php artisan config:clear
+          php artisan view:clear
+      - name: PHPUnit Tests
+        run: |
+          ./vendor/bin/phpunit
+      - name: Static analysis
+        run: ./bin/phpstan
+      - name: PSR
+        run: ./bin/style --dry-run

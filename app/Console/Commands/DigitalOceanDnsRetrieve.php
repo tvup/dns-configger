@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Services\DigitalOceanService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Http;
 
 class DigitalOceanDnsRetrieve extends Command
 {
