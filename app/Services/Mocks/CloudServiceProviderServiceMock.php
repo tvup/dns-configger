@@ -2,7 +2,6 @@
 
 namespace App\Services\Mocks;
 
-use App\Models\DnsRecord;
 use App\Services\Interfaces\CloudServiceProviderServiceInterface;
 
 class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInterface
@@ -41,13 +40,10 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
 
             return $dnsRecord;
         }
-        $dnsRecord = new \stdClass();
-        $dnsRecord->message = 'Error';
-
-        return $dnsRecord;
+        throw new \Exception('Error');
     }
 
-    public function deleteDnsRecord(DnsRecord $dnsRecord): object|null
+    public function deleteDnsRecord($dnsRecord): object|null
     {
         if ($dnsRecord->id == '1') {
             $dnsRecord = new \stdClass();
@@ -67,7 +63,7 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
         throw new \Exception('Error');
     }
 
-    public function createDnsRecord(DnsRecord $dnsRecord): object
+    public function createDnsRecord($dnsRecord): object
     {
         $dnsRecord = new \stdClass();
         $dnsRecord->id = '1';
@@ -84,7 +80,7 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
         return $dnsRecord;
     }
 
-    public function updateDnsRecord(DnsRecord $dnsRecord): object
+    public function updateDnsRecord($dnsRecord): object
     {
         if ($dnsRecord->id == '1') {
             $dnsRecord = new \stdClass();

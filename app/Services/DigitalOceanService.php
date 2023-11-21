@@ -6,9 +6,11 @@ use Illuminate\Support\Facades\Http;
 
 class DigitalOceanService implements Interfaces\CloudServiceProviderServiceInterface
 {
-    public function getDnsRecords() : array
+    public function getDnsRecords($wheres = []) : array
     {
-        $response = Http::withToken(config('services.digitalocean.api.key'))->withQueryParameters(['per_page'=>'100'])->get('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records', );
+        $queryParameters['per_page'] = '100';
+        $queryParameters = array_merge($queryParameters, $wheres);
+        $response = Http::withToken(config('services.digitalocean.api.key'))->withQueryParameters($queryParameters)->get('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records', );
 
         $attribute = 'domain_records';
         $json_decode = $this->getJson_decode($response, 200, 'Error retrieving DNS records', $attribute);
@@ -37,16 +39,20 @@ class DigitalOceanService implements Interfaces\CloudServiceProviderServiceInter
 
     public function createDnsRecord($dnsRecord): object
     {
+        $priority = null;
+        if (isset($dnsRecord->priority) && $dnsRecord->priority != '') {
+            $priority = $dnsRecord->priority;
+        }
         $response = Http::withToken(config('services.digitalocean.api.key'))->post('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records', [
-            'type' => $dnsRecord->type,
-            'name' => $dnsRecord->name,
-            'data' => $dnsRecord->data,
-            'priority' => $dnsRecord->priority != '' ? $dnsRecord->priority : null,
-            'port' => $dnsRecord->port,
-            'ttl' => $dnsRecord->ttl,
-            'weight' => $dnsRecord->weight,
-            'flags' => $dnsRecord->flags,
-            'tag' => $dnsRecord->tag,
+            'type' => $dnsRecord->type ?? null,
+            'name' => $dnsRecord->name ?? null,
+            'data' => $dnsRecord->data ?? null,
+            'priority' => $priority,
+            'port' => $dnsRecord->port ?? null,
+            'ttl' => $dnsRecord->ttl ?? null,
+            'weight' => $dnsRecord->weight ?? null,
+            'flags' => $dnsRecord->flags ?? null,
+            'tag' => $dnsRecord->tag ?? null,
         ]);
 
         $attribute = 'domain_record';
@@ -57,16 +63,20 @@ class DigitalOceanService implements Interfaces\CloudServiceProviderServiceInter
 
     public function updateDnsRecord($dnsRecord) : object
     {
+        $priority = null;
+        if (isset($dnsRecord->priority) && $dnsRecord->priority != '') {
+            $priority = $dnsRecord->priority;
+        }
         $response = Http::withToken(config('services.digitalocean.api.key'))->put('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $dnsRecord->id, [
-            'type' => $dnsRecord->type,
-            'name' => $dnsRecord->name,
-            'data' => $dnsRecord->data,
-            'priority' => $dnsRecord->priority != '' ? $dnsRecord->priority : null,
-            'port' => $dnsRecord->port,
-            'ttl' => $dnsRecord->ttl,
-            'weight' => $dnsRecord->weight,
-            'flags' => $dnsRecord->flags,
-            'tag' => $dnsRecord->tag,
+            'type' => $dnsRecord->type ?? null,
+            'name' => $dnsRecord->name ?? null,
+            'data' => $dnsRecord->data ?? null,
+            'priority' => $priority,
+            'port' => $dnsRecord->port ?? null,
+            'ttl' => $dnsRecord->ttl ?? null,
+            'weight' => $dnsRecord->weight ?? null,
+            'flags' => $dnsRecord->flags ?? null,
+            'tag' => $dnsRecord->tag ?? null,
         ]);
 
         $attribute = 'domain_record';

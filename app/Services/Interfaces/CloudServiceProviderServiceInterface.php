@@ -10,9 +10,9 @@ interface CloudServiceProviderServiceInterface
 
     public function getDnsRecord(string $id) : object;
 
-    public function deleteDnsRecord(DnsRecord $dnsRecord) : object|null;
+    public function deleteDnsRecord(DnsRecord|\stdClass $dnsRecord) : object|null;
 
-    public function createDnsRecord(DnsRecord $dnsRecord): object;
+    public function createDnsRecord(DnsRecord|\stdClass $dnsRecord): object;
 
-    public function updateDnsRecord(DnsRecord $dnsRecord): object;
+    public function updateDnsRecord(DnsRecord|\stdClass $dnsRecord): object;
 }

@@ -40,8 +40,7 @@ class EditDnsRecord extends Component
     public function update()
     {
         $this->validate();
-        $model = new DnsRecord();
-        $model->id = $this->id;
+        $model = DnsRecord::find($this->id);
         $model->type = $this->type;
         $model->name = $this->name;
         $model->data = $this->data;
@@ -52,7 +51,7 @@ class EditDnsRecord extends Component
         $model->flags = $this->flags;
         $model->tag = $this->tag;
         try {
-            $model->update();
+            $model->save();
         } catch (\Exception $e) {
             session()->flash('message', 'Error: ' . $e->getMessage());
 
@@ -73,9 +72,8 @@ class EditDnsRecord extends Component
     public function mount($id)
     {
         $this->id = $id;
-        $model = new DnsRecord();
         try {
-            $model = $model->find($this->id);
+            $model = DnsRecord::find($this->id);
         } catch (\Exception $e) {
             session()->flash('message', 'Error: ' . $e->getMessage());
 

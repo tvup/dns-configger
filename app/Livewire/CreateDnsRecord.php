@@ -49,7 +49,7 @@ class CreateDnsRecord extends Component
         $model->flags = $this->flags;
         $model->tag = $this->tag;
         try {
-            $model->create();
+            $model->save();
         } catch (\Exception $e) {
             session()->flash('message', 'Error: ' . $e->getMessage());
 

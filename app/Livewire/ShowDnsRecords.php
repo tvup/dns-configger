@@ -13,9 +13,8 @@ class ShowDnsRecords extends Component
 
     public function delete($dnsRecordId)
     {
-        $model = new DnsRecord();
-        $model->id = $dnsRecordId;
         try {
+            $model = DnsRecord::find($dnsRecordId);
             $model->delete();
         } catch (\Exception $e) {
             $this->message = $e->getMessage();
