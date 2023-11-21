@@ -2,13 +2,13 @@
 
 namespace App\Livewire;
 
+use App\Models\DnsRecord;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
-use App\Models\DnsRecord;
 
-
-class CreateDnsRecord extends Component
+class EditDnsRecord extends Component
 {
+    public $id = '';
     #[Validate('required|in:A,AAAA,CAA,CNAME,MX,NS,SOA,SRV,TXT', message: ['type.in'=>'Type must be one of A, AAAA, CAA, CNAME, MX, NS, SOA, SRV, TXT'])]
     public $type = '';
     #[Validate('required')]
@@ -28,10 +28,11 @@ class CreateDnsRecord extends Component
     #[Validate('nullable|in:issue,issuewild,iodef', message: ['tag.in'=>'Tag must be one of issue, issuewild, iodef'])]
     public $tag;
 
-    public function save()
+    public function update()
     {
         $this->validate();
         $model = new DnsRecord();
+        $model->id = $this->id;
         $model->type = $this->type;
         $model->name = $this->name;
         $model->data = $this->data;
@@ -42,17 +43,45 @@ class CreateDnsRecord extends Component
         $model->flags = $this->flags;
         $model->tag = $this->tag;
         try {
-            $model->create();
+            $model->update();
         } catch (\Exception $e) {
             session()->flash('message', 'Error: ' . $e->getMessage());
             return;
         }
-        $this->redirect('/dns-records/edit/' . $model->id);
+        session()->flash('message', 'Post Updated Successfully.');
+        $this->type = $model->type;
+        $this->name = $model->name;
+        $this->data = $model->data;
+        $this->priority = $model->priority;
+        $this->port = $model->port;
+        $this->ttl = $model->ttl;
+        $this->weight = $model->weight;
+        $this->flags = $model->flags;
+        $this->tag = $model->tag;
+    }
 
+    public function mount() {
+        $this->id = request()->route()->parameter('id');
+        $model = new DnsRecord();
+        try {
+            $model = $model->find($this->id);
+        } catch (\Exception $e) {
+            session()->flash('message', 'Error: ' . $e->getMessage());
+            return;
+        }
+        $this->type = $model->type;
+        $this->name = $model->name;
+        $this->data = $model->data;
+        $this->priority = $model->priority;
+        $this->port = $model->port;
+        $this->ttl = $model->ttl;
+        $this->weight = $model->weight;
+        $this->flags = $model->flags;
+        $this->tag = $model->tag;
     }
 
     public function render()
     {
-        return view('livewire.create-dns-record');
+        return view('livewire.edit-dns-record');
     }
 }

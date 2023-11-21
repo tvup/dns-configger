@@ -37,11 +37,54 @@ class DnsRecord
         return collect($array);
     }
 
-    public function delete($id) {
-        app(DigitalOceanService::class)->deleteDnsRecord($id);
+
+    public function find($id) {
+        $dnsRecord = app(DigitalOceanService::class)->getDnsRecord($id);
+        $model = new DnsRecord();
+        $model->id = $dnsRecord->id;
+        $model->type = $dnsRecord->type;
+        $model->name = $dnsRecord->name;
+        $model->data = $dnsRecord->data;
+        $model->priority = $dnsRecord->priority;
+        $model->port = $dnsRecord->port;
+        $model->ttl = $dnsRecord->ttl;
+        $model->weight = $dnsRecord->weight;
+        $model->flags = $dnsRecord->flags;
+        $model->tag = $dnsRecord->tag;
+
+        return $model;
+    }
+
+    public function delete() {
+        app(DigitalOceanService::class)->deleteDnsRecord($this);
     }
 
     public function create() {
-        app(DigitalOceanService::class)->createDnsRecord($this);
+        $jsonObject = app(DigitalOceanService::class)->createDnsRecord($this);
+        $this->id = $jsonObject->id;
+        $this->type = $jsonObject->type;
+        $this->name = $jsonObject->name;
+        $this->data = $jsonObject->data;
+        $this->priority = $jsonObject->priority;
+        $this->port = $jsonObject->port;
+        $this->ttl = $jsonObject->ttl;
+        $this->weight = $jsonObject->weight;
+        $this->flags = $jsonObject->flags;
+        $this->tag = $jsonObject->tag;
+    }
+
+    public function update() {
+        $jsonObject = app(DigitalOceanService::class)->updateDnsRecord($this);
+        $this->id = $jsonObject->id;
+        $this->type = $jsonObject->type;
+        $this->name = $jsonObject->name;
+        $this->data = $jsonObject->data;
+        $this->priority = $jsonObject->priority;
+        $this->port = $jsonObject->port;
+        $this->ttl = $jsonObject->ttl;
+        $this->weight = $jsonObject->weight;
+        $this->flags = $jsonObject->flags;
+        $this->tag = $jsonObject->tag;
+
     }
 }

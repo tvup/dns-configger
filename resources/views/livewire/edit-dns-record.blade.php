@@ -1,5 +1,5 @@
 <div>
-    <h2>New dns record:</h2>
+    <h2>Edit dns record:</h2>
 
     @if (session()->has('message'))
         <div class="alert alert-success">
@@ -7,7 +7,7 @@
         </div>
     @endif
 
-    <form wire:submit="save">
+    <form wire:submit="update">
         <label>
             <span>Type</span>
             <em>The type of the DNS record. For example: A, CNAME, TXT, ...</em>

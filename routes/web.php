@@ -17,3 +17,4 @@ Route::get('/', \App\Livewire\ShowDnsRecords::class);
 
 Route::get('/dns-records', \App\Livewire\ShowDnsRecords::class);
 Route::get('/dns-records/create', \App\Livewire\CreateDnsRecord::class);
+Route::get('/dns-records/edit/{id}', \App\Livewire\EditDnsRecord::class);

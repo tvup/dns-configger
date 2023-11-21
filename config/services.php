@@ -35,5 +35,8 @@ return [
         'api' => [
             'key' => env('DIGITAL_OCEAN_API_KEY'),
         ],
+        'domain' => [
+            'url' => env('DIGITAL_OCEAN_DOMAIN_URL'),
+        ],
     ],
 ];
