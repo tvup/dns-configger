@@ -70,9 +70,9 @@ class EditDnsRecord extends Component
         $this->tag = $model->tag;
     }
 
-    public function mount()
+    public function mount($id)
     {
-        $this->id = request()->route()->parameter('id');
+        $this->id = $id;
         $model = new DnsRecord();
         try {
             $model = $model->find($this->id);

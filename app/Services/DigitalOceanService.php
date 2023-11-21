@@ -4,9 +4,9 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 
-class DigitalOceanService
+class DigitalOceanService implements Interfaces\CloudServiceProviderServiceInterface
 {
-    public function getDnsRecords()
+    public function getDnsRecords() : array
     {
         $response = Http::withToken(config('services.digitalocean.api.key'))->withQueryParameters(['per_page'=>'100'])->get('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records', );
 
@@ -16,7 +16,7 @@ class DigitalOceanService
         return $json_decode->{$attribute};
     }
 
-    public function getDnsRecord($id)
+    public function getDnsRecord($id) : object
     {
         $response = Http::withToken(config('services.digitalocean.api.key'))->get('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $id);
 
@@ -26,7 +26,7 @@ class DigitalOceanService
         return $json_decode->{$attribute};
     }
 
-    public function deleteDnsRecord($dnsRecord)
+    public function deleteDnsRecord($dnsRecord) : object|null
     {
         $response = Http::withToken(config('services.digitalocean.api.key'))->delete('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $dnsRecord->id);
 
@@ -35,7 +35,7 @@ class DigitalOceanService
         return $json_decode;
     }
 
-    public function createDnsRecord($dnsRecord)
+    public function createDnsRecord($dnsRecord): object
     {
         $response = Http::withToken(config('services.digitalocean.api.key'))->post('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records', [
             'type' => $dnsRecord->type,
@@ -55,7 +55,7 @@ class DigitalOceanService
         return $json_decode->{$attribute};
     }
 
-    public function updateDnsRecord($dnsRecord)
+    public function updateDnsRecord($dnsRecord) : object
     {
         $response = Http::withToken(config('services.digitalocean.api.key'))->put('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $dnsRecord->id, [
             'type' => $dnsRecord->type,
@@ -80,7 +80,7 @@ class DigitalOceanService
      * @return mixed
      * @throws \Exception
      */
-    public function getJson_decode(
+    private function getJson_decode(
         \GuzzleHttp\Promise\PromiseInterface|\Illuminate\Http\Client\Response $response,
         int $statusCode,
         string $fallBackMessage,

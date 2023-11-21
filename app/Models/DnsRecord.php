@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Services\DigitalOceanService;
+use App\Services\Interfaces\CloudServiceProviderServiceInterface;
 
 class DnsRecord
 {
@@ -29,7 +29,7 @@ class DnsRecord
     public function all()
     {
         $array = [];
-        foreach (app(DigitalOceanService::class)->getDnsRecords() as $dnsRecord) {
+        foreach (app(CloudServiceProviderServiceInterface::class)->getDnsRecords() as $dnsRecord) {
             $model = new DnsRecord();
             $model->id = $dnsRecord->id;
             $model->type = $dnsRecord->type;
@@ -49,7 +49,7 @@ class DnsRecord
 
     public function find($id)
     {
-        $dnsRecord = app(DigitalOceanService::class)->getDnsRecord($id);
+        $dnsRecord = app(CloudServiceProviderServiceInterface::class)->getDnsRecord($id);
         $model = new DnsRecord();
         $model->id = $dnsRecord->id;
         $model->type = $dnsRecord->type;
@@ -67,12 +67,12 @@ class DnsRecord
 
     public function delete()
     {
-        app(DigitalOceanService::class)->deleteDnsRecord($this);
+        app(CloudServiceProviderServiceInterface::class)->deleteDnsRecord($this);
     }
 
     public function create()
     {
-        $jsonObject = app(DigitalOceanService::class)->createDnsRecord($this);
+        $jsonObject = app(CloudServiceProviderServiceInterface::class)->createDnsRecord($this);
         $this->id = $jsonObject->id;
         $this->type = $jsonObject->type;
         $this->name = $jsonObject->name;
@@ -87,7 +87,7 @@ class DnsRecord
 
     public function update()
     {
-        $jsonObject = app(DigitalOceanService::class)->updateDnsRecord($this);
+        $jsonObject = app(CloudServiceProviderServiceInterface::class)->updateDnsRecord($this);
         $this->id = $jsonObject->id;
         $this->type = $jsonObject->type;
         $this->name = $jsonObject->name;

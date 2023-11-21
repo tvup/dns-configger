@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\DigitalOceanService;
+use App\Services\Interfaces\CloudServiceProviderServiceInterface;
 use Illuminate\Console\Command;
 
 class DigitalOceanDnsRetrieve extends Command
@@ -26,6 +26,6 @@ class DigitalOceanDnsRetrieve extends Command
      */
     public function handle()
     {
-        dd(app(DigitalOceanService::class)->getDnsRecords());
+        dd(app(CloudServiceProviderServiceInterface::class)->getDnsRecords());
     }
 }
