@@ -4,15 +4,29 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{{ $title ?? 'Page Title' }}</title>
+    <title>{{ $title?? config('app.name') }}</title>
     @vite(['resources/css/app.css'])
 </head>
 <body>
-<nav>
-    <a href="/dns-records" @class(['current' => request()->is('dns-records')])>DNS records</a>
-    <a href="/dns-records/create" @class(['current' => request()->is('dns-records/create')])>Create DNS record</a>
-</nav>
-
-{{ $slot }}
+    <header>
+        <nav>
+            <a href="/"><img alt="Logo" src="/img/TorbenIT01-sing.png" height="70"></a>
+            <ul>
+                <li><a href="/dns-records" @class(['current' => request()->is('dns-records')])>List DNS records</a></li>
+                <li><a href="/incidents" @class(['current' => request()->is('incidents')])>List site errors</a></li>
+            </ul>
+        </nav>
+        <h1>{{ $title?? config('app.name') }}</h1>
+    </header>
+    <main>
+        {{ $slot }}
+    </main>
+    <footer>
+        <hr>
+        <p>
+            Created By
+            <a href="https://github.com/tvup">Torben IT ApS</a>
+        </p>
+    </footer>
 </body>
 </html>

@@ -6,7 +6,7 @@ use App\Models\DnsRecord;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Title('DNS records')]
+#[Title('List DNS records')]
 class ShowDnsRecords extends Component
 {
     public $message = '';

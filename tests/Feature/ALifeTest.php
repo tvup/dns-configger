@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ALifeTest extends TestCase
@@ -12,8 +11,18 @@ class ALifeTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
-        $response = $this->get('/');
+        $response = $this->get('/dns-records');
 
         $response->assertStatus(200);
+    }
+
+    /**
+     * Redirect to a specific page instead of /.
+     */
+    public function test_the_application_redirects_to_main_page_on_root(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(302);
     }
 }

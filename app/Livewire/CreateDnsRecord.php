@@ -3,9 +3,11 @@
 namespace App\Livewire;
 
 use App\Models\DnsRecord;
+use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
+#[Title('Create DNS record')]
 class CreateDnsRecord extends Component
 {
     #[Validate('required|in:A,AAAA,CAA,CNAME,MX,NS,SOA,SRV,TXT', message: ['type.in'=>'Type must be one of A, AAAA, CAA, CNAME, MX, NS, SOA, SRV, TXT'])]
@@ -56,6 +58,11 @@ class CreateDnsRecord extends Component
             return;
         }
         $this->redirect('/dns-records/edit/' . $model->id);
+    }
+
+    public function cancel()
+    {
+        return redirect('/dns-records');
     }
 
     public function render()

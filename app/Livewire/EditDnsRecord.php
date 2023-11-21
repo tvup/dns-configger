@@ -3,9 +3,11 @@
 namespace App\Livewire;
 
 use App\Models\DnsRecord;
+use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
+#[Title('Edit DNS record')]
 class EditDnsRecord extends Component
 {
     public $id = '';
@@ -88,6 +90,11 @@ class EditDnsRecord extends Component
         $this->weight = $model->weight;
         $this->flags = $model->flags;
         $this->tag = $model->tag;
+    }
+
+    public function cancel()
+    {
+        return redirect('/dns-records');
     }
 
     public function render()

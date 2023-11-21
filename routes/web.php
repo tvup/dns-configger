@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', \App\Livewire\ShowDnsRecords::class);
+Route::get('/', function () {
+    return redirect(url('/dns-records'));
+});
 
 Route::get('/dns-records', \App\Livewire\ShowDnsRecords::class);
 Route::get('/dns-records/create', \App\Livewire\CreateDnsRecord::class);
