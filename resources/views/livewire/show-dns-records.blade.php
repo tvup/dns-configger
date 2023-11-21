@@ -41,13 +41,16 @@
                             <button wire:click="edit({{ $dnsRecord->id }})"><x-icon.pencil class="icons"/> Edit</button>
                         </td>
                         <td>
+                            @if($dnsRecord->type != 'SOA')
                             <button
                                     type="button"
                                     wire:click="delete({{ $dnsRecord->id }})"
                                     wire:confirm="Are you sure you want to delete this record?"
                             >
+
                                 <x-icon.trash class="icons"/> Delete
                             </button>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

@@ -12,38 +12,42 @@ class EditDnsRecord extends Component
 {
     public $id = '';
 
-    #[Validate('required|in:A,AAAA,CAA,CNAME,MX,NS,SOA,SRV,TXT', message: ['type.in'=>'Type must be one of A, AAAA, CAA, CNAME, MX, NS, SOA, SRV, TXT'])]
+    #[Validate('required|in:A,AAAA,CAA,CNAME,MX,NS,SRV,TXT,SOA', message: ['type.in'=>'Type must be one of A, AAAA, CAA, CNAME, MX, NS, SRV, TXT, SOA'])]
     public $type = '';
 
-    #[Validate('required')]
+    #[Validate('required_unless:type,SOA')]
     public $name = '';
 
-    #[Validate('required')]
+    #[Validate('required_unless:type,SOA')]
     public $data = '';
 
-    #[Validate('nullable|integer')]
+    #[Validate('required_if:type,MX|required_if:type,SRV|nullable|integer')]
     public $priority = '';
 
-    #[Validate('nullable|integer')]
+    #[Validate('required_if:type,SRV|nullable|integer')]
     public $port;
 
     #[Validate('nullable|integer')]
     public $ttl;
 
-    #[Validate('nullable|integer')]
+    #[Validate('required_if:type,SRV|nullable|integer')]
     public $weight;
 
-    #[Validate('nullable|integer|min:0|max:255')]
+    #[Validate('required_if:type,CAA|nullable|integer|min:0|max:255')]
     public $flags;
 
-    #[Validate('nullable|in:issue,issuewild,iodef', message: ['tag.in'=>'Tag must be one of issue, issuewild, iodef'])]
+    #[Validate('required_if:type,CAA|nullable|in:issue,issuewild,iodef', message: ['tag.in'=>'Tag must be one of issue, issuewild, iodef'])]
     public $tag;
 
     public function update()
     {
         $this->validate();
         $model = DnsRecord::find($this->id);
-        $model->type = $this->type;
+        if ($model->type != $this->type) {
+            session()->flash('message', 'Error: ' . 'Type cannot be changed.');
+
+            return;
+        }
         $model->name = $this->name;
         $model->data = $this->data;
         $model->priority = $this->priority;
@@ -60,7 +64,6 @@ class EditDnsRecord extends Component
             return;
         }
         session()->flash('message', 'Post Updated Successfully.');
-        $this->type = $model->type;
         $this->name = $model->name;
         $this->data = $model->data;
         $this->priority = $model->priority;

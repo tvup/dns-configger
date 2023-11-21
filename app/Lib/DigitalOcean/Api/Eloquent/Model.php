@@ -31,6 +31,23 @@ abstract class Model extends BaseModel
             $query = $this->newBaseQueryBuilder();
             $dirty = $this->getDirty();
 
+            //Here comes the hack :(
+            //Some attributes are needed to be considered dirty, even if they are not.
+            //This is to ensure that they will be a part of the query that updates the remote entity.
+            if ($this instanceof \App\Models\DnsRecord) {
+                if (!array_key_exists('name', $dirty)) {
+                    $dirty['name'] = $this->name;
+                }
+                if (($this->type == 'SRV') && (!array_key_exists('data', $dirty)) && ($this->data == '@')) {
+                    //This is an extraordinary case only for SRV records.
+                    //If data isn't dirty, and the value of data is @,
+                    //then we need to set it to @, otherwise digitalocean will set data to something like
+                    //example.com.example.com
+                    $dirty['data'] = '@';
+                }
+            }
+            //End of hack
+
             $where = [
                 'column' => $this->getKeyName(),
                 'value' => $attributes[$this->getKeyName()],

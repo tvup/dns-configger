@@ -47,6 +47,6 @@ class EditDnsRecordTest extends TestCase
         Livewire::test(EditDnsRecord::class, ['id' => 1])
             ->set('name', '') // empty name to trigger validation error
             ->call('update')
-            ->assertHasErrors(['name' => 'required']);
+            ->assertHasErrors(['name' => 'required_unless']);
     }
 }

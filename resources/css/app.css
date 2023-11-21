@@ -78,6 +78,19 @@ a b,a em,a i,a strong,button,input[type=submit] {
     text-align: left
 }
 
+.fakeinputfield {
+    width: calc(100% - 1.6rem);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-bg-secondary);
+    margin-top: 0;
+    margin-bottom: 16px;
+    padding-left: 12.8px;
+    padding-right: 12.8px;
+    padding-top: 6.4px;
+    padding-bottom: 6.4px;
+    line-height: normal;
+}
+
 :root {
     --width-content: initial;
 }

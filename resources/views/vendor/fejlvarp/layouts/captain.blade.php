@@ -12,6 +12,7 @@
             <nav>
                 <a href="/"><img alt="Logo" src="/img/TorbenIT01-sing.png" height="70"></a>
                 <ul>
+                    <li><a href="/dns-records/create" @class(['current' => request()->is('dns-records/create')])>Create DNS record</a></li>
                     <li><a href="/dns-records" @class(['current' => request()->is('dns-records')])>List DNS records</a></li>
                     <li><a href="/incidents" @class(['current' => request()->is('incidents')])>List site errors</a></li>
                 </ul>
