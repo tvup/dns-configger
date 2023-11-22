@@ -12,6 +12,8 @@ use Livewire\Component;
 #[Title('Create DNS record')]
 class CreateDnsRecord extends Component
 {
+    public $id = '';
+
     #[Validate('required|in:A,AAAA,CAA,CNAME,MX,NS,SRV,TXT', message: ['type.in'=>'Type must be one of A, AAAA, CAA, CNAME, MX, NS, SRV, TXT'])]
     public $type = '';
 
@@ -79,6 +81,7 @@ class CreateDnsRecord extends Component
 
             return;
         }
+        $this->id = $model->id;
         $this->redirect('/dns-records/edit/' . $model->id);
     }
 

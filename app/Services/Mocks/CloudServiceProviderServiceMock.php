@@ -56,19 +56,33 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
 
     public function createDnsRecord($dnsRecord): object
     {
-        $dnsRecord = new \stdClass();
-        $dnsRecord->id = '1';
-        $dnsRecord->type = 'A';
-        $dnsRecord->name = 'test';
-        $dnsRecord->data = '126.0.0.2';
-        $dnsRecord->ttl = 300;
-        $dnsRecord->priority = null;
-        $dnsRecord->port = null;
-        $dnsRecord->weight = null;
-        $dnsRecord->flags = null;
-        $dnsRecord->tag = null;
+        $newDnsRecord = new \stdClass();
+        $newDnsRecord->id = rand(343248021, 3432480210);
+        $newDnsRecord->type = $dnsRecord->type;
+        $newDnsRecord->name = $dnsRecord->name;
+        $newDnsRecord->data = $dnsRecord->data;
+        $newDnsRecord->ttl = $dnsRecord->ttl;
+        $newDnsRecord->priority = $dnsRecord->priority;
+        $newDnsRecord->port = $dnsRecord->port;
+        $newDnsRecord->weight = $dnsRecord->weight;
+        $newDnsRecord->flags = $dnsRecord->flags;
+        $newDnsRecord->tag = $dnsRecord->tag;
 
-        return $dnsRecord;
+        $array = $this->getDnsRecordsOnFile();
+
+        if (count($array) == 0) {
+            $array = [];
+            for ($i = 0; $i < rand(1, 40); $i++) {
+                $dnsRecord = DnsRecord::factory()->make();
+                $array[] = $dnsRecord;
+            }
+            Storage::disk('test')->put('dns-records.json', json_encode($array));
+            $array = $this->getDnsRecordsOnFile();
+        }
+        $array[] = $newDnsRecord;
+        Storage::disk('test')->put('dns-records.json', json_encode($array));
+
+        return $newDnsRecord;
     }
 
     public function updateDnsRecord($dnsRecord): object

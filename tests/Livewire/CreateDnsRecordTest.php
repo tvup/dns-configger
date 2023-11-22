@@ -27,13 +27,19 @@ class CreateDnsRecordTest extends TestCase
             'data' => '192.0.2.1',
         ];
 
-        Livewire::test(CreateDnsRecord::class)
+        $test = Livewire::test(CreateDnsRecord::class)
             ->set('type', $dnsRecordData['type'])
             ->set('name', $dnsRecordData['name'])
             ->set('data', $dnsRecordData['data'])
-            ->call('save')
-            ->assertHasNoErrors()
-            ->assertRedirect('/dns-records/edit/1'); // Assuming the first record
+            ->call('save');
+        $newId = $test->get('id');
+        $test->assertHasNoErrors();
+        $test->assertRedirect('/dns-records/edit/' . $newId);
+        $response = $this->get('/dns-records/edit/' . $newId);
+        $response->assertStatus(200);
+        $response->assertSee($newId);
+        $response->assertSee('example.com');
+        $response->assertSee('192.0.2.1');
     }
 
     /** @test */
