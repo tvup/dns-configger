@@ -1,7 +1,7 @@
 <div>
     @if (session()->has('message'))
         <div class="alert alert-success">
-            {{ session('message') }}
+            <mark></mark>{{ session('message') }}</mark>
         </div>
     @endif
 
@@ -27,7 +27,7 @@
                     <option value="{{ $type }}">{{ $type }}</option>
                 @endforeach
             </select>
-            @error('type') <em>{{ $message }}</em>@enderror
+            @error('type') <mark><em>{{ $message }}</em></mark>@enderror
         </div>
 
         <div x-data="{relatesOnType: [
@@ -58,7 +58,7 @@
                 <em x-text="type[$wire.type]"></em>
             </template>
             <input type="text" wire:model="name" id="name">
-            @error('name') <em>{{ $message }}</em>@enderror
+            @error('name') <mark><em>{{ $message }}</em></mark>@enderror
         </div>
 
 
@@ -91,35 +91,35 @@
                     <em x-text="type[$wire.type]"></em>
                 </template>
                 <textarea wire:model="data" id="data"></textarea>
-                @error('data') <em>{{ $message }}</em>@enderror
+                @error('data') <mark><em>{{ $message }}</em></mark>@enderror
         </div>
 
         <div x-show="['SRV', 'MX'].includes($wire.type)">
             <label for="priority">Priority</label>
             <em>e.g. 10</em>
             <input type="text" wire:model="priority" id="priority">
-            @error('priority') <em>{{ $message }}</em>@enderror
+            @error('priority') <mark><em>{{ $message }}</em></mark>@enderror
         </div>
 
         <div x-show="$wire.type === 'SRV'">
             <label for="port">Port</label>
             <em>e.g. 5060</em>
             <input type="text" wire:model="port" id="port">
-            @error('port') <em>{{ $message }}</em>@enderror
+            @error('port') <mark><em>{{ $message }}</em></mark>@enderror
         </div>
 
         <div x-show="$wire.type === 'SRV'">
             <label for="weight">Weight</label>
             <em>e.g. 100</em>
             <input type="text" wire:model="weight" id="weight">
-            @error('weight') <em>{{ $message }}</em>@enderror
+            @error('weight') <mark><em>{{ $message }}</em></mark>@enderror
         </div>
 
         <div x-show="$wire.type === 'CAA'">
             <label for="flags">Flags</label>
             <em>An unsigned integer between 0-255.</em>
             <input type="text" wire:model="flags" id="flags">
-            @error('flags') <em>{{ $message }}</em>@enderror
+            @error('flags') <mark><em>{{ $message }}</em></mark>@enderror
         </div>
 
         <div x-show="$wire.type === 'CAA'">
@@ -131,14 +131,14 @@
                     <option value="{{ $tag }}">{{ $tag }}</option>
                 @endforeach
             </select>
-            @error('tag') <em>{{ $message }}</em>@enderror
+            @error('tag') <mark><em>{{ $message }}</em></mark>@enderror
         </div>
 
         <div>
             <label for="ttl">TTL</label>
             <em>This value is the time to live for the record, in seconds. This defines the time frame that clients can cache queried information before a refresh should be requested.</em>
             <input type="text" wire:model="ttl" id="ttl">
-            @error('ttl') <em>{{ $message }}</em>@enderror
+            @error('ttl') <mark><em>{{ $message }}</em></mark>@enderror
         </div>
 
         <button type="submit">Save</button>
