@@ -110,23 +110,18 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
     {
         $dnsRecordsFile = Storage::disk('test')->get('dns-records.json');
         if (!$dnsRecordsFile) {
-            throw new \ErrorException('Could not load file with mocked data');
+            $array = $this->createRandomCountOfMocks();
+            $this->saveModelsToFileOrFail($array);
+            $dnsRecordsFile = Storage::disk('test')->get('dns-records.json');
         }
+
+        if (!$dnsRecordsFile) {
+            throw new \ErrorException('Unable to get or create and get a file with mocked data');
+        }
+
         /** @var array<array<string,int|string|null>>|false|null $arrayAway */
         $arrayAway = json_decode($dnsRecordsFile, true);
         // !arrayAway svarer til en fil med indholdet: [] eller ingen fil
-        if (!$arrayAway) {
-            $array = [];
-            for ($i = 0; $i < rand(14, 40); $i++) {
-                $dnsRecordArray = app(DnsRecordFactory::class)->definition();
-                $dnsRecord = new stdClass();
-                foreach ($dnsRecordArray as $key => $value) {
-                    $dnsRecord->$key = $value;
-                }
-                $array[] = $dnsRecord;
-            }
-            $this->saveModelsToFileOrFail($array);
-        }
 
         $array = [];
         if (!$arrayAway) {
@@ -156,5 +151,23 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
         } else {
             throw new \ErrorException('Could not create file to store mock data in');
         }
+    }
+
+    /**
+     * @return array<stdClass>
+     */
+    public function createRandomCountOfMocks(): array
+    {
+        $array = [];
+        for ($i = 0; $i < rand(14, 40); $i++) {
+            $dnsRecordArray = app(DnsRecordFactory::class)->definition();
+            $dnsRecord = new stdClass();
+            foreach ($dnsRecordArray as $key => $value) {
+                $dnsRecord->$key = $value;
+            }
+            $array[] = $dnsRecord;
+        }
+
+        return $array;
     }
 }
