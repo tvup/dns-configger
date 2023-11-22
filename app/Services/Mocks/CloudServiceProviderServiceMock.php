@@ -11,9 +11,10 @@ use stdClass;
 class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInterface
 {
     /**
+     * @param array<string,string|integer> $wheres
      * @return array<int, stdClass>
      */
-    public function getDnsRecords(): array
+    public function getDnsRecords(array $wheres = []): array
     {
         return $this->getDnsRecordsOnFile();
     }
