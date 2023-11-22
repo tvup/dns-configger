@@ -3,6 +3,8 @@
 namespace App\Livewire;
 
 use App\Models\DnsRecord;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Fluent;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -42,6 +44,26 @@ class EditDnsRecord extends Component
     public function update()
     {
         $this->validate();
+
+        $validator = Validator::make(
+            [
+                'type' => $this->type,
+                'data' => $this->data,
+            ],
+            [
+                'type' => 'required|in:A,AAAA,CAA,CNAME,MX,NS,SRV,TXT,SOA',
+                'data' => 'required_unless:type,SOA',
+            ]
+        );
+
+        $validator->sometimes('data', 'ipv4', function (Fluent $input) {
+            return $input->type == 'A';
+        });
+
+        $validator->sometimes('data', 'ipv6', function (Fluent $input) {
+            return $input->type == 'AAAA';
+        })->validate();
+
         $model = DnsRecord::find($this->id);
         if ($model->type != $this->type) {
             session()->flash('message', 'Error: ' . 'Type cannot be changed.');

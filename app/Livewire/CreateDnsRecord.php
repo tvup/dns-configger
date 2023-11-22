@@ -3,6 +3,8 @@
 namespace App\Livewire;
 
 use App\Models\DnsRecord;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Fluent;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -40,6 +42,26 @@ class CreateDnsRecord extends Component
     public function save()
     {
         $this->validate();
+
+        $validator = Validator::make(
+            [
+                'type' => $this->type,
+                'data' => $this->data,
+            ],
+            [
+                'type' => 'required|in:A,AAAA,CAA,CNAME,MX,NS,SRV,TXT',
+                'data' => 'required',
+            ]
+        );
+
+        $validator->sometimes('data', 'ipv4', function (Fluent $input) {
+            return $input->type == 'A';
+        });
+
+        $validator->sometimes('data', 'ipv6', function (Fluent $input) {
+            return $input->type == 'AAAA';
+        })->validate();
+
         $model = new DnsRecord();
         $model->type = $this->type;
         $model->name = $this->name;
