@@ -98,6 +98,9 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
     {
         $dnsRecordsFile = Storage::disk('test')->get('dns-records.json');
         $arrayAway = json_decode($dnsRecordsFile, true);
+        if (!$arrayAway) {
+            return [];
+        }
         $array = [];
         foreach ($arrayAway as $thing) {
             $dnsRecord = new DnsRecord();

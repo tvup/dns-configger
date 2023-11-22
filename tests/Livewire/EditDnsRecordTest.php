@@ -4,6 +4,7 @@ namespace Tests\Livewire;
 
 use App\Livewire\EditDnsRecord;
 use App\Livewire\ShowDnsRecords;
+use App\Services\Interfaces\CloudServiceProviderServiceInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
@@ -25,6 +26,14 @@ class EditDnsRecordTest extends TestCase
     {
         $dnsRecordsFile = Storage::disk('test')->get('dns-records.json');
         $arrayAway = json_decode($dnsRecordsFile, true);
+        if (!$arrayAway) {
+            app(CloudServiceProviderServiceInterface::class)->getDnsRecords();
+            $dnsRecordsFile = Storage::disk('test')->get('dns-records.json');
+            $arrayAway = json_decode($dnsRecordsFile, true);
+            if (!$arrayAway) {
+                throw new \Exception('Error: Could not get mocked data.');
+            }
+        }
         $array = [];
         foreach ($arrayAway as $thing) {
             $dnsRecord = new \App\Models\DnsRecord();
