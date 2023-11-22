@@ -7,7 +7,7 @@ use stdClass;
 interface CloudServiceProviderServiceInterface
 {
     /**
-     * @param array<string,string|integer> $wheres
+     * @param array<int|string, mixed> $wheres
      * @return array<int, stdClass>
      */
     public function getDnsRecords(array $wheres = []) : array;

@@ -18,7 +18,7 @@ class CreateDnsRecord extends Component
     public string $type = '';
 
     #[Validate('required')]
-    public string $name = '';
+    public ?string $name = null;
 
     #[Validate('required')]
     public string $data = '';

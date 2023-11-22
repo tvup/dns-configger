@@ -11,14 +11,18 @@ use stdClass;
 class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInterface
 {
     /**
-     * @param array<string,string|integer> $wheres
+     * @param array<int|string, mixed> $wheres
      * @return array<int, stdClass>
+     * @throws \ErrorException
      */
     public function getDnsRecords(array $wheres = []): array
     {
         return $this->getDnsRecordsOnFile();
     }
 
+    /**
+     * @throws \Exception
+     */
     public function getDnsRecord(int $id): stdClass
     {
         $array = $this->getDnsRecordsOnFile();
@@ -35,6 +39,9 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
         return $dnsRecord;
     }
 
+    /**
+     * @throws \ErrorException
+     */
     public function deleteDnsRecord(stdClass $dnsRecord): stdClass
     {
         $array = $this->getDnsRecordsOnFile();
@@ -46,18 +53,23 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
             }
         }
 
-        Storage::disk('test')->put('dns-records.json', json_encode($collection->toArray()));
+        /** @var array<stdClass> $array1 */
+        $array1 = $collection->toArray();
+        $this->saveModelsToFileOrFail($array1);
 
         return $dnsRecord;
     }
 
+    /**
+     * @throws \ErrorException
+     */
     public function createDnsRecord(stdClass $dnsRecord): stdClass
     {
         $dnsRecord->id = rand(343248021, 3432480210);
         $array = $this->getDnsRecordsOnFile();
         $array[] = $dnsRecord;
 
-        Storage::disk('test')->put('dns-records.json', json_encode($array));
+        $this->saveModelsToFileOrFail($array);
 
         return $dnsRecord;
     }
@@ -83,17 +95,24 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
             }
         }
 
-        Storage::disk('test')->put('dns-records.json', json_encode($collection->toArray()));
+        /** @var array<stdClass> $array1 */
+        $array1 = $collection->toArray();
+        $this->saveModelsToFileOrFail($array1);
 
         return $dnsRecordFromStorage;
     }
 
     /**
      * @return array<stdClass>
+     * @throws \ErrorException
      */
     private function getDnsRecordsOnFile() : array
     {
         $dnsRecordsFile = Storage::disk('test')->get('dns-records.json');
+        if (!$dnsRecordsFile) {
+            throw new \ErrorException('Could not load file with mocked data');
+        }
+        /** @var array<array<string,int|string|null>>|false|null $arrayAway */
         $arrayAway = json_decode($dnsRecordsFile, true);
         // !arrayAway svarer til en fil med indholdet: [] eller ingen fil
         if (!$arrayAway) {
@@ -106,12 +125,13 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
                 }
                 $array[] = $dnsRecord;
             }
-            Storage::disk('test')->put('dns-records.json', json_encode($array));
-            $dnsRecordsFile = Storage::disk('test')->get('dns-records.json');
-            $arrayAway = json_decode($dnsRecordsFile, true);
+            $this->saveModelsToFileOrFail($array);
         }
 
         $array = [];
+        if (!$arrayAway) {
+            throw new \ErrorException('Could not parse file with mocked data');
+        }
         foreach ($arrayAway as $thing) {
             $dnsRecord = new stdClass();
             foreach ($thing as $key => $value) {
@@ -121,5 +141,20 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
         }
 
         return $array;
+    }
+
+    /**
+     * @param array<stdClass> $array
+     * @return void
+     * @throws \ErrorException
+     */
+    public function saveModelsToFileOrFail(array $array): void
+    {
+        $json_encode = json_encode($array);
+        if ($json_encode) {
+            Storage::disk('test')->put('dns-records.json', $json_encode);
+        } else {
+            throw new \ErrorException('Could not create file to store mock data in');
+        }
     }
 }

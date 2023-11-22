@@ -18,7 +18,7 @@ class EditDnsRecord extends Component
     public string $type = '';
 
     #[Validate('required_unless:type,SOA')]
-    public string $name = '';
+    public ?string $name = null;
 
     #[Validate('required_unless:type,SOA')]
     public string $data = '';
@@ -64,6 +64,7 @@ class EditDnsRecord extends Component
             return $input->type == 'AAAA';
         })->validate();
 
+        /** @var DnsRecord $model */ //$model cannot become null. If dnsRecord doesn't exist, an exception is thrown
         $model = DnsRecord::find($this->id);
         if ($model->type != $this->type) {
             session()->flash('message', 'Error: ' . 'Type cannot be changed.');
@@ -100,6 +101,7 @@ class EditDnsRecord extends Component
     {
         $this->id = $id;
         try {
+            /** @var DnsRecord $model */
             $model = DnsRecord::find($this->id);
         } catch (\Exception $e) {
             session()->flash('message', 'Error: ' . $e->getMessage());
@@ -117,7 +119,7 @@ class EditDnsRecord extends Component
         $this->tag = $model->tag;
     }
 
-    public function cancel() : \Illuminate\Http\RedirectResponse
+    public function cancel() : \Illuminate\Http\RedirectResponse|\Livewire\Features\SupportRedirects\Redirector
     {
         return redirect('/dns-records');
     }

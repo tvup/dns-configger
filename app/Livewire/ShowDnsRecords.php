@@ -17,6 +17,9 @@ class ShowDnsRecords extends Component
         $this->message = '';
         try {
             $model = DnsRecord::find($dnsRecordId);
+            if (!$model) {
+                throw new \Exception('DNS record not found.');
+            }
             $model->delete();
             $this->message = 'DNS record deleted successfully.';
         } catch (\Exception $e) {

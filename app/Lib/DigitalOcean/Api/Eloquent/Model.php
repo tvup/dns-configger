@@ -73,9 +73,11 @@ abstract class Model extends BaseModel
     public function delete()
     {
         if (!$this->exists) {
-            return false;
+            return null;
         }
 
-        return $this->setKeysForSaveQuery($this->newModelQuery())->delete();
+        $this->setKeysForSaveQuery($this->newModelQuery())->delete();
+
+        return true;
     }
 }

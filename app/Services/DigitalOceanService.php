@@ -9,7 +9,7 @@ use stdClass;
 class DigitalOceanService implements CloudServiceProviderServiceInterface
 {
     /**
-     * @param array<string,string|integer> $wheres
+     * @param array<int|string, mixed> $wheres
      * @return array|stdClass[]
      * @throws \Exception
      */
@@ -17,7 +17,11 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
     {
         $queryParameters['per_page'] = '100';
         $queryParameters = array_merge($queryParameters, $wheres);
-        $response = Http::withToken(config('services.digitalocean.api.key'))->withQueryParameters($queryParameters)->get('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records', );
+        $config = config('services.digitalocean.api.key');
+        if (!is_string($config)) {
+            throw new \Exception('Could not get API key for DigitalOcean');
+        }
+        $response = Http::withToken($config)->withQueryParameters($queryParameters)->get('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records', );
 
         $attribute = 'domain_records';
         $json_decode = $this->getJson_decode($response, 200, 'Error retrieving DNS records', $attribute);
@@ -27,7 +31,11 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
 
     public function getDnsRecord(int $id) : stdClass
     {
-        $response = Http::withToken(config('services.digitalocean.api.key'))->get('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $id);
+        $config = config('services.digitalocean.api.key');
+        if (!is_string($config)) {
+            throw new \Exception('Could not get API key for DigitalOcean');
+        }
+        $response = Http::withToken($config)->get('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $id);
 
         $attribute = 'domain_record';
         $json_decode = $this->getJson_decode($response, 200, 'Error retrieving DNS record', $attribute);
@@ -37,7 +45,11 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
 
     public function deleteDnsRecord(stdClass $dnsRecord) : stdClass|null
     {
-        $response = Http::withToken(config('services.digitalocean.api.key'))->delete('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $dnsRecord->id);
+        $config = config('services.digitalocean.api.key');
+        if (!is_string($config)) {
+            throw new \Exception('Could not get API key for DigitalOcean');
+        }
+        $response = Http::withToken($config)->delete('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $dnsRecord->id);
 
         $json_decode = $this->getJson_decode($response, 204, 'Error deleting DNS record');
 
@@ -50,7 +62,12 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
         if (isset($dnsRecord->priority) && $dnsRecord->priority != '') {
             $priority = $dnsRecord->priority;
         }
-        $response = Http::withToken(config('services.digitalocean.api.key'))->post('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records', [
+        $config = config('services.digitalocean.api.key');
+        if (!is_string($config)) {
+            throw new \Exception('Could not get API key for DigitalOcean');
+        }
+
+        $response = Http::withToken($config)->post('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records', [
             'type' => $dnsRecord->type ?? null,
             'name' => $dnsRecord->name ?? null,
             'data' => $dnsRecord->data ?? null,
@@ -74,7 +91,11 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
         if (isset($dnsRecord->priority) && $dnsRecord->priority != '') {
             $priority = $dnsRecord->priority;
         }
-        $response = Http::withToken(config('services.digitalocean.api.key'))->put('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $dnsRecord->id, [
+        $config = config('services.digitalocean.api.key');
+        if (!is_string($config)) {
+            throw new \Exception('Could not get API key for DigitalOcean');
+        }
+        $response = Http::withToken($config)->put('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $dnsRecord->id, [
             'type' => $dnsRecord->type ?? null,
             'name' => $dnsRecord->name ?? null,
             'data' => $dnsRecord->data ?? null,
@@ -93,12 +114,12 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
     }
 
     /**
-     * @param \GuzzleHttp\Promise\PromiseInterface|\Illuminate\Http\Client\Response $response
-     * @return mixed
+     * @param \Illuminate\Http\Client\Response $response
+     * @return stdClass
      * @throws \Exception
      */
     private function getJson_decode(
-        \GuzzleHttp\Promise\PromiseInterface|\Illuminate\Http\Client\Response $response,
+        \Illuminate\Http\Client\Response $response,
         int $statusCode,
         string $fallBackMessage,
         string $attribute = null
@@ -112,21 +133,27 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
         $json_decode = null;
 
         if ($attribute) {
+            /** @var stdClass|false|null $json_decode */
             $json_decode = json_decode($body, false);
-            if (null === $json_decode) {
+            if (null === $json_decode || $json_decode === false) {
                 throw new \Exception($fallBackMessage);
             }
         }
 
         if ($response->status() != $statusCode) {
+            /** @var stdClass|false|null $json_decode */
             $json_decode = json_decode($body, false);
-            if (null === $json_decode || !isset($json_decode->message)) {
+            if (null === $json_decode || $json_decode === false || !isset($json_decode->message)) {
                 throw new \Exception($fallBackMessage);
             }
             throw new \Exception($json_decode->message);
         }
 
         if ($attribute && !isset($json_decode->{$attribute})) {
+            throw new \Exception($fallBackMessage);
+        }
+
+        if (null === $json_decode) {
             throw new \Exception($fallBackMessage);
         }
 
