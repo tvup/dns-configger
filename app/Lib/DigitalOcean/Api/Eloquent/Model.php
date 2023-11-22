@@ -7,12 +7,7 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
 
 abstract class Model extends BaseModel
 {
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-    }
-
-    protected function newBaseQueryBuilder()
+    protected function newBaseQueryBuilder(): QueryBuilder
     {
         $conn = $this->getConnection();
 
@@ -21,6 +16,11 @@ abstract class Model extends BaseModel
         return new QueryBuilder($conn, $grammar, $conn->getPostProcessor());
     }
 
+    /**
+     * @param array<string, mixed> $options
+     * @return bool
+     * @throws \Exception
+     */
     public function save(array $options = [])
     {
         $query = $this->newModelQuery();
@@ -57,7 +57,7 @@ abstract class Model extends BaseModel
             ];
             $query->wheres = [$where];
 
-            return $query->update($dirty);
+            return $query->update($dirty) > 0;
         }
 
         $id = $query->insertGetId($attributes, $keyName = $this->getKeyName());

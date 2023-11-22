@@ -6,9 +6,11 @@ parameters:
         - app/
 
     # Level 9 is the highest level
-    level: 1
+    level: 6
 
     ignoreErrors: # All these errors are weird to fix. We will do that lastly,
+        -
+            message: "#^Access to an undefined property Illuminate\\\\Support\\\\Fluent::.#"
 
 #
 #    excludePaths:

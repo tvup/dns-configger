@@ -12,36 +12,36 @@ use Livewire\Component;
 #[Title('Create DNS record')]
 class CreateDnsRecord extends Component
 {
-    public $id = '';
+    public int $id;
 
     #[Validate('required|in:A,AAAA,CAA,CNAME,MX,NS,SRV,TXT', message: ['type.in'=>'Type must be one of A, AAAA, CAA, CNAME, MX, NS, SRV, TXT'])]
-    public $type = '';
+    public string $type = '';
 
     #[Validate('required')]
-    public $name = '';
+    public string $name = '';
 
     #[Validate('required')]
-    public $data = '';
+    public string $data = '';
 
     #[Validate('required_if:type,MX|required_if:type,SRV|nullable|integer')]
-    public $priority = '';
+    public ?int $priority = null;
 
     #[Validate('required_if:type,SRV|nullable|integer')]
-    public $port;
+    public ?int $port = null;
 
-    #[Validate('nullable|integer')]
-    public $ttl;
+    #[Validate('required|integer')]
+    public int $ttl = 600;
 
     #[Validate('required_if:type,SRV|nullable|integer')]
-    public $weight;
+    public ?int $weight = null;
 
     #[Validate('required_if:type,CAA|nullable|integer|min:0|max:255')]
-    public $flags;
+    public ?int $flags = null;
 
     #[Validate('required_if:type,CAA|nullable|in:issue,issuewild,iodef', message: ['tag.in'=>'Tag must be one of issue, issuewild, iodef'])]
-    public $tag;
+    public string|null $tag = null;
 
-    public function save()
+    public function save(): void
     {
         $this->validate();
 
@@ -85,12 +85,12 @@ class CreateDnsRecord extends Component
         $this->redirect('/dns-records/edit/' . $model->id);
     }
 
-    public function cancel()
+    public function cancel():   \Illuminate\Http\RedirectResponse
     {
         return redirect('/dns-records');
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.create-dns-record');
     }

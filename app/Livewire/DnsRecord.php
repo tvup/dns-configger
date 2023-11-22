@@ -6,7 +6,7 @@ use Livewire\Component;
 
 class DnsRecord extends Component
 {
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.dns-record');
     }

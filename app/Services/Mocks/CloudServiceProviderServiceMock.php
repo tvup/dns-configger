@@ -2,34 +2,30 @@
 
 namespace App\Services\Mocks;
 
-use App\Models\DnsRecord;
 use App\Services\Interfaces\CloudServiceProviderServiceInterface;
+use Database\Factories\DnsRecordFactory;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use stdClass;
 
 class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInterface
 {
+    /**
+     * @return array<int, stdClass>
+     */
     public function getDnsRecords(): array
     {
-        $array = $this->getDnsRecordsOnFile();
-
-        if (count($array) == 0) {
-            $array = [];
-            for ($i = 0; $i < rand(1, 40); $i++) {
-                $dnsRecord = DnsRecord::factory()->make();
-                $array[] = $dnsRecord;
-            }
-            Storage::disk('test')->put('dns-records.json', json_encode($array));
-
-            return $array;
-        }
-
-        return $array;
+        return $this->getDnsRecordsOnFile();
     }
 
-    public function getDnsRecord(string $id): object
+    public function getDnsRecord(int $id): stdClass
     {
         $array = $this->getDnsRecordsOnFile();
-        $collection = collect($array);
+        $collection = new Collection();
+        foreach ($array as $dnsRecord) {
+            $collection->push($dnsRecord);
+        }
+        /** @var stdClass|null $dnsRecord */
         $dnsRecord = $collection->where('id', $id)->first();
         if (!$dnsRecord) {
             throw new \Exception('Resource not found');
@@ -38,7 +34,7 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
         return $dnsRecord;
     }
 
-    public function deleteDnsRecord($dnsRecord): object|null
+    public function deleteDnsRecord(stdClass $dnsRecord): stdClass
     {
         $array = $this->getDnsRecordsOnFile();
         $collection = collect($array);
@@ -54,38 +50,21 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
         return $dnsRecord;
     }
 
-    public function createDnsRecord($dnsRecord): object
+    public function createDnsRecord(stdClass $dnsRecord): stdClass
     {
-        $newDnsRecord = new \stdClass();
-        $newDnsRecord->id = rand(343248021, 3432480210);
-        $newDnsRecord->type = $dnsRecord->type;
-        $newDnsRecord->name = $dnsRecord->name;
-        $newDnsRecord->data = $dnsRecord->data;
-        $newDnsRecord->ttl = $dnsRecord->ttl;
-        $newDnsRecord->priority = $dnsRecord->priority;
-        $newDnsRecord->port = $dnsRecord->port;
-        $newDnsRecord->weight = $dnsRecord->weight;
-        $newDnsRecord->flags = $dnsRecord->flags;
-        $newDnsRecord->tag = $dnsRecord->tag;
-
+        $dnsRecord->id = rand(343248021, 3432480210);
         $array = $this->getDnsRecordsOnFile();
+        $array[] = $dnsRecord;
 
-        if (count($array) == 0) {
-            $array = [];
-            for ($i = 0; $i < rand(1, 40); $i++) {
-                $dnsRecord = DnsRecord::factory()->make();
-                $array[] = $dnsRecord;
-            }
-            Storage::disk('test')->put('dns-records.json', json_encode($array));
-            $array = $this->getDnsRecordsOnFile();
-        }
-        $array[] = $newDnsRecord;
         Storage::disk('test')->put('dns-records.json', json_encode($array));
 
-        return $newDnsRecord;
+        return $dnsRecord;
     }
 
-    public function updateDnsRecord($dnsRecord): object
+    /**
+     * @throws \ErrorException
+     */
+    public function updateDnsRecord(stdClass $dnsRecord): stdClass
     {
         $array = $this->getDnsRecordsOnFile();
         $collection = collect($array);
@@ -93,7 +72,7 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
         if (!$dnsRecordFromStorage) {
             throw new \Exception('Resource not found');
         }
-        foreach ($dnsRecord as $key => $value) {
+        foreach (get_object_vars($dnsRecord) as $key => $value) {
             $dnsRecordFromStorage->{$key} = $dnsRecord->{$key};
         }
 
@@ -108,17 +87,35 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
         return $dnsRecordFromStorage;
     }
 
-    public function getDnsRecordsOnFile()
+    /**
+     * @return array<stdClass>
+     */
+    private function getDnsRecordsOnFile() : array
     {
         $dnsRecordsFile = Storage::disk('test')->get('dns-records.json');
         $arrayAway = json_decode($dnsRecordsFile, true);
+        // !arrayAway svarer til en fil med indholdet: [] eller ingen fil
         if (!$arrayAway) {
-            return [];
+            $array = [];
+            for ($i = 0; $i < rand(14, 40); $i++) {
+                $dnsRecordArray = app(DnsRecordFactory::class)->definition();
+                $dnsRecord = new stdClass();
+                foreach ($dnsRecordArray as $key => $value) {
+                    $dnsRecord->$key = $value;
+                }
+                $array[] = $dnsRecord;
+            }
+            Storage::disk('test')->put('dns-records.json', json_encode($array));
+            $dnsRecordsFile = Storage::disk('test')->get('dns-records.json');
+            $arrayAway = json_decode($dnsRecordsFile, true);
         }
+
         $array = [];
         foreach ($arrayAway as $thing) {
-            $dnsRecord = new DnsRecord();
-            $dnsRecord->forceFill($thing);
+            $dnsRecord = new stdClass();
+            foreach ($thing as $key => $value) {
+                $dnsRecord->$key = $value;
+            }
             $array[] = $dnsRecord;
         }
 

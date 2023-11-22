@@ -1,11 +1,11 @@
 <div>
     <section>
-        @if (isset($message) && $message !== '')
-            <div class="alert alert-success">
-                <mark>{{ $message }}</mark>
-            </div>
-        @endif
         <div>
+            @if (isset($message) && $message !== '')
+                <div class="alert alert-success">
+                    <mark>{{ $message }}</mark>
+                </div>
+            @endif
             <a class="fullwidth" href="/dns-records/create"><b><x-icon.plus class="icons"/> New DNS record</b></a>
             <table>
                 <thead>

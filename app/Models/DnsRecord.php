@@ -11,13 +11,13 @@ use Illuminate\Support\Str;
  *
  * @property int $id
  * @property string $type
- * @property string $name
- * @property string $data
- * @property int $priority
- * @property int $port
- * @property int $weight
- * @property int $flags
- * @property string $tag
+ * @property ?string $name
+ * @property ?string $data
+ * @property ?int $priority
+ * @property ?int $port
+ * @property ?int $weight
+ * @property ?int $flags
+ * @property ?string $tag
  * @property int $ttl
  */
 class DnsRecord extends Model
@@ -37,7 +37,7 @@ class DnsRecord extends Model
         'tag',
     ];
 
-    public function getDataAttribute()
+    public function getDataAttribute() : string
     {
         $data = $this->attributes['data'];
         switch($this->type) {
@@ -63,7 +63,7 @@ class DnsRecord extends Model
         return $data;
     }
 
-    public function setDataAttribute($value)
+    public function setDataAttribute(string $value) : void
     {
         switch($this->type) {
             case 'CAA':

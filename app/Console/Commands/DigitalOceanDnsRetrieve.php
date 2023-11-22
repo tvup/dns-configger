@@ -24,7 +24,7 @@ class DigitalOceanDnsRetrieve extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle() : void
     {
         dd(app(CloudServiceProviderServiceInterface::class)->getDnsRecords());
     }

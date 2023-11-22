@@ -29,7 +29,7 @@ class ViewComposerServiceProvider extends ServiceProvider
     /**
      * Compose menu items for every view that needs this.
      */
-    private function titleComposer()
+    private function titleComposer() : void
     {
         view()->composer(['fejlvarp::incidents.index', 'fejlvarp::incidents.show'], function ($view) {
             $titles = [

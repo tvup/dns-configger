@@ -2,11 +2,18 @@
 
 namespace App\Services;
 
+use App\Services\Interfaces\CloudServiceProviderServiceInterface;
 use Illuminate\Support\Facades\Http;
+use stdClass;
 
-class DigitalOceanService implements Interfaces\CloudServiceProviderServiceInterface
+class DigitalOceanService implements CloudServiceProviderServiceInterface
 {
-    public function getDnsRecords($wheres = []) : array
+    /**
+     * @param array<string,string|integer> $wheres
+     * @return array|stdClass[]
+     * @throws \Exception
+     */
+    public function getDnsRecords(array $wheres = []) : array
     {
         $queryParameters['per_page'] = '100';
         $queryParameters = array_merge($queryParameters, $wheres);
@@ -18,7 +25,7 @@ class DigitalOceanService implements Interfaces\CloudServiceProviderServiceInter
         return $json_decode->{$attribute};
     }
 
-    public function getDnsRecord($id) : object
+    public function getDnsRecord(int $id) : stdClass
     {
         $response = Http::withToken(config('services.digitalocean.api.key'))->get('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $id);
 
@@ -28,7 +35,7 @@ class DigitalOceanService implements Interfaces\CloudServiceProviderServiceInter
         return $json_decode->{$attribute};
     }
 
-    public function deleteDnsRecord($dnsRecord) : object|null
+    public function deleteDnsRecord(stdClass $dnsRecord) : stdClass|null
     {
         $response = Http::withToken(config('services.digitalocean.api.key'))->delete('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $dnsRecord->id);
 
@@ -37,7 +44,7 @@ class DigitalOceanService implements Interfaces\CloudServiceProviderServiceInter
         return $json_decode;
     }
 
-    public function createDnsRecord($dnsRecord): object
+    public function createDnsRecord(stdClass $dnsRecord): stdClass
     {
         $priority = null;
         if (isset($dnsRecord->priority) && $dnsRecord->priority != '') {
@@ -61,7 +68,7 @@ class DigitalOceanService implements Interfaces\CloudServiceProviderServiceInter
         return $json_decode->{$attribute};
     }
 
-    public function updateDnsRecord($dnsRecord) : object
+    public function updateDnsRecord(stdClass $dnsRecord) : stdClass
     {
         $priority = null;
         if (isset($dnsRecord->priority) && $dnsRecord->priority != '') {
@@ -98,7 +105,7 @@ class DigitalOceanService implements Interfaces\CloudServiceProviderServiceInter
     ) {
         $body = $response->body();
 
-        if (null === $body) {
+        if ($statusCode != 204 && '' == $body) {
             throw new \Exception($fallBackMessage);
         }
 

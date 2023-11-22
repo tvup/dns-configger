@@ -2,17 +2,20 @@
 
 namespace App\Services\Interfaces;
 
-use App\Models\DnsRecord;
+use stdClass;
 
 interface CloudServiceProviderServiceInterface
 {
+    /**
+     * @return array<int, stdClass>
+     */
     public function getDnsRecords() : array;
 
-    public function getDnsRecord(string $id) : object;
+    public function getDnsRecord(int $id) : stdClass;
 
-    public function deleteDnsRecord(DnsRecord|\stdClass $dnsRecord) : object|null;
+    public function deleteDnsRecord(stdClass $dnsRecord) : stdClass|null;
 
-    public function createDnsRecord(DnsRecord|\stdClass $dnsRecord): object;
+    public function createDnsRecord(stdClass $dnsRecord): stdClass;
 
-    public function updateDnsRecord(DnsRecord|\stdClass $dnsRecord): object;
+    public function updateDnsRecord(stdClass $dnsRecord): stdClass;
 }

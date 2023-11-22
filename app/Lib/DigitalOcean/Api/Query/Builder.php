@@ -2,7 +2,9 @@
 
 namespace App\Lib\DigitalOcean\Api\Query;
 
+use App\Models\DnsRecord;
 use App\Services\Interfaces\CloudServiceProviderServiceInterface;
+use Illuminate\Support\Collection;
 use stdClass;
 
 class Builder extends \Illuminate\Database\Query\Builder
@@ -19,26 +21,20 @@ class Builder extends \Illuminate\Database\Query\Builder
         parent::__construct($connection, $grammar, $processor);
     }
 
+    /**
+     * @param string[] $columns
+     * @return Collection<(int|string), \Illuminate\Database\Eloquent\Model>
+     */
     public function get($columns = ['*'])
     {
         if (count($this->wheres) == 1 && $this->wheres[0]['column'] == $this->from . '.id') {
             $dnsRecord = app(CloudServiceProviderServiceInterface::class)->getDnsRecord($this->wheres[0]['value']);
 
-            $array = [];
-            $model = [];
-            $model['id'] = $dnsRecord->id;
-            $model['type'] = $dnsRecord->type;
-            $model['name'] = $dnsRecord->name;
-            $model['data'] = $dnsRecord->data;
-            $model['priority'] = $dnsRecord->priority;
-            $model['port'] = $dnsRecord->port;
-            $model['ttl'] = $dnsRecord->ttl;
-            $model['weight'] = $dnsRecord->weight;
-            $model['flags'] = $dnsRecord->flags;
-            $model['tag'] = $dnsRecord->tag;
-            $array[] = $model;
+            $collection = new Collection();
 
-            return collect($array);
+            $collection->push($dnsRecord);
+
+            return $collection;
         }
 
         $queryParameters = [];
@@ -49,26 +45,20 @@ class Builder extends \Illuminate\Database\Query\Builder
         }
         $apiResult = app(CloudServiceProviderServiceInterface::class)->getDnsRecords($queryParameters);
 
-        $array = [];
+        $collection = new Collection();
+
         foreach ($apiResult as $dnsRecord) {
-            $model = [];
-            $model['id'] = $dnsRecord->id;
-            $model['type'] = $dnsRecord->type;
-            $model['name'] = $dnsRecord->name;
-            $model['data'] = $dnsRecord->data;
-            $model['priority'] = $dnsRecord->priority;
-            $model['port'] = $dnsRecord->port;
-            $model['ttl'] = $dnsRecord->ttl;
-            $model['weight'] = $dnsRecord->weight;
-            $model['flags'] = $dnsRecord->flags;
-            $model['tag'] = $dnsRecord->tag;
-            $array[] = $model;
+            $collection->push($dnsRecord);
         }
 
-        return collect($array);
+        return $collection;
     }
 
-    public function insert(array $values)
+    /**
+     * @param array<DnsRecord> $values
+     * @return bool
+     */
+    public function insert(array $values) : bool
     {
         if (empty($values)) {
             return false;
@@ -84,10 +74,10 @@ class Builder extends \Illuminate\Database\Query\Builder
         return true;
     }
 
-    public function insertGetId(array $values, $sequence = null)
+    public function insertGetId(array $values, $sequence = null) : int
     {
         if (empty($values)) {
-            return false;
+            return 0;
         }
 
         $model = new stdClass();
@@ -100,10 +90,10 @@ class Builder extends \Illuminate\Database\Query\Builder
         return $model->id;
     }
 
-    public function update(array $values)
+    public function update(array $values): int
     {
         if (empty($values)) {
-            return false;
+            return 0;
         }
 
         $model = new stdClass();
@@ -113,15 +103,20 @@ class Builder extends \Illuminate\Database\Query\Builder
         $model->id = $this->wheres[0]['value'];
         app(CloudServiceProviderServiceInterface::class)->updateDnsRecord($model);
 
-        return true;
+        return 1;
     }
 
-    public function delete($id = null)
+    /**
+     * Is supposed to return the number of rows affected.
+     * @param $id
+     * @return int
+     */
+    public function delete($id = null): int
     {
         $model = new stdClass();
         $model->id = $id ?: $this->wheres[0]['value'];
         app(CloudServiceProviderServiceInterface::class)->deleteDnsRecord($model);
 
-        return true;
+        return 1;
     }
 }
