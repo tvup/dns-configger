@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Lib\DigitalOcean\Api\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
 
 /**
@@ -21,6 +22,8 @@ use Illuminate\Support\Str;
  */
 class DnsRecord extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'id',
         'type',

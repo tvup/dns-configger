@@ -3,7 +3,9 @@
 namespace Tests\Livewire;
 
 use App\Livewire\EditDnsRecord;
+use App\Livewire\ShowDnsRecords;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -21,24 +23,37 @@ class EditDnsRecordTest extends TestCase
     /** @test */
     public function component_mounts_with_dns_record_data()
     {
-        Livewire::test(EditDnsRecord::class, ['id' => 1])
-            ->assertSet('name', 'test')
-            ->assertSet('type', 'A');
+        $dnsRecordsFile = Storage::disk('test')->get('dns-records.json');
+        $arrayAway = json_decode($dnsRecordsFile, true);
+        $array = [];
+        foreach ($arrayAway as $thing) {
+            $dnsRecord = new \App\Models\DnsRecord();
+            $dnsRecord->forceFill($thing);
+            $array[] = $dnsRecord;
+        }
+        $collection = collect($array);
+        $dnsRecord = $collection->first();
+
+        $test = Livewire::test(EditDnsRecord::class, ['id' => $dnsRecord->id]);
+        $this->assertEquals($dnsRecord->id, $test->getData()['id']);
     }
 
     /** @test */
     public function it_updates_dns_record()
     {
+        $test = Livewire::test(ShowDnsRecords::class);
+        $collection = $test->viewData('dnsRecords');
+        $dnsRecord = $collection->first();
+
         $updatedData = [
-            'name' => 'Updated Name',
-            'type' => 'A',
+            'ttl' => 123,
         ];
 
-        Livewire::test(EditDnsRecord::class, ['id' => 1])
-            ->set('name', $updatedData['name'])
-            ->set('type', $updatedData['type'])
-            ->call('update')
-            ->assertHasNoErrors();
+        $tets = Livewire::test(EditDnsRecord::class, ['id' => $dnsRecord->id])
+            ->set('ttl', $updatedData['ttl'])
+            ->call('update');
+        $tets->assertSee('Post Updated Successfully.');
+        $tets->assertHasNoErrors();
     }
 
     /** @test */
