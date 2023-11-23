@@ -67,7 +67,7 @@ class EditDnsRecord extends Component
         /** @var DnsRecord $model */ //$model cannot become null. If dnsRecord doesn't exist, an exception is thrown
         $model = DnsRecord::find($this->id);
         if ($model->type != $this->type) {
-            session()->flash('message', 'Error: ' . 'Type cannot be changed.');
+            $this->dispatch('error', type: 'error', message: 'Type cannot be changed. <br /><button type="button" class="btn clear">Dismiss</button>', title: 'Error during update');
 
             return;
         }
@@ -82,11 +82,11 @@ class EditDnsRecord extends Component
         try {
             $model->save();
         } catch (\Exception $e) {
-            session()->flash('message', 'Error: ' . $e->getMessage());
+            $this->dispatch('error', type: 'error', message: 'Error: ' . $e->getMessage() . ' <br /><button type="button" class="btn clear">Dismiss</button>', title: 'Error during save');
 
             return;
         }
-        session()->flash('message', 'Post Updated Successfully.');
+        $this->dispatch('success', type: 'success', message: 'Record Updated Successfully.');
         $this->name = $model->name;
         $this->data = $model->data;
         $this->priority = $model->priority;
@@ -104,7 +104,7 @@ class EditDnsRecord extends Component
             /** @var DnsRecord $model */
             $model = DnsRecord::find($this->id);
         } catch (\Exception $e) {
-            session()->flash('message', 'Error: ' . $e->getMessage());
+            $this->dispatch('error', type: 'error', message: 'Error: ' . $e->getMessage() . ' <br /><button type="button" class="btn clear">Dismiss</button>', title: 'Error during load page');
 
             return;
         }
@@ -117,6 +117,13 @@ class EditDnsRecord extends Component
         $this->weight = $model->weight;
         $this->flags = $model->flags;
         $this->tag = $model->tag;
+    }
+
+    public function rendering() : void
+    {
+        if (session()->has('message')) {
+            $this->dispatch('success', type: 'success', message: session()->get('message'));
+        }
     }
 
     public function cancel() : \Illuminate\Http\RedirectResponse|\Livewire\Features\SupportRedirects\Redirector

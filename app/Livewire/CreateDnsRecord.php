@@ -77,11 +77,12 @@ class CreateDnsRecord extends Component
         try {
             $model->save();
         } catch (\Exception $e) {
-            session()->flash('message', 'Error: ' . $e->getMessage());
+            $this->dispatch('error', type: 'error', message: 'Error: ' . $e->getMessage() . ' <br /><button type="button" class="btn clear">Dismiss</button>', title: 'Error during save');
 
             return;
         }
         $this->id = $model->id;
+        session()->flash('message', 'DNS record created successfully.');
         $this->redirect('/dns-records/edit/' . $model->id);
     }
 

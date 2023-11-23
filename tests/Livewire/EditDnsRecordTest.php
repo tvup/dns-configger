@@ -60,7 +60,11 @@ class EditDnsRecordTest extends TestCase
         $test = Livewire::test(EditDnsRecord::class, ['id' => $dnsRecord->id]);
         $test->set('ttl', $updatedData['ttl']);
         $test->call('update');
-        $test->assertSee('Post Updated Successfully.');
+        $test->assertDispatched('success', function ($event) {
+            $this->assertEquals($event, 'success');
+
+            return true;
+        });
         $test->assertHasNoErrors();
     }
 

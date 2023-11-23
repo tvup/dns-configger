@@ -1,11 +1,5 @@
 <div>
-    @if (session()->has('message'))
-        <div class="alert alert-success">
-            <mark></mark>{{ session('message') }}</mark>
-        </div>
-    @endif
-
-    <form wire:submit="save">
+        <form wire:submit="save">
         <div x-data="{typeHint: [
                         {'':'The type of the DNS record.'},
                         {'A':'This record type is used to map an IPv4 address to a hostname.'},

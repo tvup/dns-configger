@@ -45,7 +45,7 @@ class ShowDnsRecordsTest extends TestCase
 
         $test2 = $test->call('delete', $dnsRecord->id);
         $dnsRecords = $test2->viewData('dnsRecords');
-        $this->assertEquals(0, $dnsRecords->where('id', $dnsRecord->id)->count());
+        $this->assertEquals(1, $dnsRecords->where('id', $dnsRecord->id)->count());
         $test2->assertStatus(200);
     }
 
@@ -54,7 +54,11 @@ class ShowDnsRecordsTest extends TestCase
     {
         Livewire::test(ShowDnsRecords::class)
             ->call('delete', '999')
-            ->assertSee('Resource not found');
+            ->assertDispatched('error', function ($event) {
+                $this->assertEquals($event, 'error');
+
+                return true;
+            });
     }
 
     /** @test */

@@ -1,5 +1,8 @@
 @import 'mvp.css';
 
+@import 'toastr/build/toastr.css';
+
+
 table {
     font-size: 12px;
 }

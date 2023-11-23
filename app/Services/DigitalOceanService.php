@@ -12,6 +12,7 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
      * @param array<int|string, mixed> $wheres
      * @return array|stdClass[]
      * @throws \Exception
+     * @throws \Throwable
      */
     public function getDnsRecords(array $wheres = []) : array
     {
@@ -25,6 +26,7 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
 
         $attribute = 'domain_records';
         $json_decode = $this->getJson_decode($response, 200, 'Error retrieving DNS records', $attribute);
+        throw_if(null === $json_decode, new \Exception('Server has unallowed reply'));
 
         return $json_decode->{$attribute};
     }
@@ -39,6 +41,7 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
 
         $attribute = 'domain_record';
         $json_decode = $this->getJson_decode($response, 200, 'Error retrieving DNS record', $attribute);
+        throw_if(null === $json_decode, new \Exception('Server has unallowed reply'));
 
         return $json_decode->{$attribute};
     }
@@ -81,6 +84,7 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
 
         $attribute = 'domain_record';
         $json_decode = $this->getJson_decode($response, 201, 'Error creating DNS record', $attribute);
+        throw_if(null === $json_decode, new \Exception('Server has unallowed reply'));
 
         return $json_decode->{$attribute};
     }
@@ -109,13 +113,14 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
 
         $attribute = 'domain_record';
         $json_decode = $this->getJson_decode($response, 200, 'Error updating DNS record', $attribute);
+        throw_if(null === $json_decode, new \Exception('Server has unallowed reply'));
 
         return $json_decode->{$attribute};
     }
 
     /**
      * @param \Illuminate\Http\Client\Response $response
-     * @return stdClass
+     * @return ?stdClass
      * @throws \Exception
      */
     private function getJson_decode(
@@ -127,7 +132,7 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
         $body = $response->body();
 
         if ($statusCode != 204 && '' == $body) {
-            throw new \Exception($fallBackMessage);
+            throw new \Exception('4A ' . $fallBackMessage);
         }
 
         $json_decode = null;
@@ -136,7 +141,7 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
             /** @var stdClass|false|null $json_decode */
             $json_decode = json_decode($body, false);
             if (null === $json_decode || $json_decode === false) {
-                throw new \Exception($fallBackMessage);
+                throw new \Exception('4B ' . $fallBackMessage);
             }
         }
 
@@ -144,17 +149,13 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
             /** @var stdClass|false|null $json_decode */
             $json_decode = json_decode($body, false);
             if (null === $json_decode || $json_decode === false || !isset($json_decode->message)) {
-                throw new \Exception($fallBackMessage);
+                throw new \Exception('4C ' . $fallBackMessage);
             }
             throw new \Exception($json_decode->message);
         }
 
         if ($attribute && !isset($json_decode->{$attribute})) {
-            throw new \Exception($fallBackMessage);
-        }
-
-        if (null === $json_decode) {
-            throw new \Exception($fallBackMessage);
+            throw new \Exception('4D ' . $fallBackMessage);
         }
 
         return $json_decode;

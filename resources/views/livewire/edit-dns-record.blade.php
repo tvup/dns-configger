@@ -1,10 +1,4 @@
 <div>
-    @if (session()->has('message'))
-        <div class="alert alert-success">
-            <mark>{{ session('message') }}</mark>
-        </div>
-    @endif
-
     <form wire:submit="update">
         <div x-data="{typeHint: [
                         {'':'The type of the DNS record.'},

@@ -10,20 +10,17 @@ use Livewire\Features\SupportRedirects\Redirector;
 #[Title('List DNS records')]
 class ShowDnsRecords extends Component
 {
-    public string $message = '';
-
     public function delete(int $dnsRecordId) : void
     {
-        $this->message = '';
         try {
             $model = DnsRecord::find($dnsRecordId);
             if (!$model) {
                 throw new \Exception('DNS record not found.');
             }
             $model->delete();
-            $this->message = 'DNS record deleted successfully.';
+            $this->dispatch('info', type: 'info', message: 'DNS record deleted successfully.');
         } catch (\Exception $e) {
-            $this->message = $e->getMessage();
+            $this->dispatch('error', type: 'error', message: 'Error: ' . $e->getMessage() . ' <br /><button type="button" class="btn clear">Dismiss</button>', title: 'Error during deletion');
         }
     }
 
@@ -38,7 +35,7 @@ class ShowDnsRecords extends Component
         try {
             $collection = $model->all();
         } catch (\Exception $e) {
-            $this->message = 'Error: ' . $e->getMessage();
+            $this->dispatch('error', type: 'error', message: 'Error: ' . $e->getMessage() . ' <br /><button type="button" class="btn clear">Dismiss</button>', title: 'Error during load page');
 
             return view('livewire.show-dns-records', [
                 'dnsRecords' => collect(),

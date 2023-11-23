@@ -4,7 +4,6 @@ namespace App\Services\Mocks;
 
 use App\Services\Interfaces\CloudServiceProviderServiceInterface;
 use Database\Factories\DnsRecordFactory;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use stdClass;
 
@@ -26,32 +25,38 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
     public function getDnsRecord(int $id): stdClass
     {
         $array = $this->getDnsRecordsOnFile();
-        $collection = new Collection();
-        foreach ($array as $dnsRecord) {
-            $collection->push($dnsRecord);
-        }
-        /** @var stdClass|null $dnsRecord */
-        $dnsRecord = $collection->where('id', $id)->first();
-        if (!$dnsRecord) {
-            throw new \Exception('Resource not found');
-        }
+        $collection = collect($array);
 
-        return $dnsRecord;
+        $hit = false;
+
+        foreach ($collection as $key => $item) {
+            if ($item->id == $id) {
+                $hit = $collection[$key];
+                break;
+            }
+        }
+        throw_if(!$hit, new \Exception('Resource not found'));
+
+        return $hit;
     }
 
     /**
      * @throws \ErrorException
+     * @throws \Throwable
      */
     public function deleteDnsRecord(stdClass $dnsRecord): stdClass
     {
         $array = $this->getDnsRecordsOnFile();
         $collection = collect($array);
 
+        $hit = false;
         foreach ($collection as $key => $item) {
             if ($item->id == $dnsRecord->id) {
+                $hit = true;
                 unset($collection[$key]);
             }
         }
+        throw_if($hit, new \Exception('Resource not found'));
 
         /** @var array<stdClass> $array1 */
         $array1 = $collection->toArray();
