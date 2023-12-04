@@ -24,8 +24,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
-          extensions: soap, http, sqlsrv, pdo_sqlsrv
+          php-version: '8.2'
       - name: Create Directories
         run: mkdir -p storage/framework/cache  && mkdir -p storage/framework/views && mkdir -p storage/framework/sessions && mkdir -p storage/app/test
       - name: Directory Permissions
