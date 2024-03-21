@@ -25,13 +25,13 @@ class Builder extends \Illuminate\Database\Query\Builder
      * @param string[] $columns
      * @return Collection<(int|string), \Illuminate\Database\Eloquent\Model>
      */
-    public function get($columns = ['*'])
+    public function get($columns = ['*']): Collection
     {
-        if (count($this->wheres) == 1 && $this->wheres[0]['column'] == $this->from . '.id') {
+        $columnIdentifier = is_string($this->from) ? $this->from . '.id' : null;
+
+        if ($columnIdentifier && count($this->wheres) == 1 && $this->wheres[0]['column'] == $columnIdentifier) {
             $dnsRecord = app(CloudServiceProviderServiceInterface::class)->getDnsRecord($this->wheres[0]['value']);
-
             $collection = new Collection();
-
             $collection->push($dnsRecord);
 
             return $collection;
@@ -46,7 +46,6 @@ class Builder extends \Illuminate\Database\Query\Builder
         $apiResult = app(CloudServiceProviderServiceInterface::class)->getDnsRecords($queryParameters);
 
         $collection = new Collection();
-
         foreach ($apiResult as $dnsRecord) {
             $collection->push($dnsRecord);
         }
