@@ -2,38 +2,30 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
 /**
  * App\Models\DnsRecord.
  *
- * @property int $id
+ * @property string|int $id
+ * @property string $zone_id
  * @property string $type
  * @property ?string $name
- * @property ?string $data
- * @property ?int $priority
- * @property ?int $port
- * @property ?int $weight
- * @property ?int $flags
- * @property ?string $tag
+ * @property ?string $value
  * @property int $ttl
  */
-class DnsRecord extends BaseDnsRecord
+class HetznerDnsRecord extends BaseDnsRecord
 {
-    use HasFactory;
-
     protected $fillable = [
         'id',
+        'zone_id',
         'type',
         'name',
-        'data',
+        'value',
         'ttl',
-        'priority',
-        'port',
-        'weight',
-        'flags',
-        'tag',
     ];
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
 
     /**
      * @param array<string, string|int> $attributes
@@ -44,8 +36,13 @@ class DnsRecord extends BaseDnsRecord
         $this->fill([
             'type' => $attributes['type'] ?? null,
             'name' => $attributes['name'] ?? null,
-            'data' => $attributes['data'] ?? null, // Brug 'data'
+            'value' => $attributes['data'] ?? null, // 'data' bliver 'value' her
             'ttl' => $attributes['ttl'] ?? 600,
         ]);
+    }
+
+    public function getDataAttribute(): string
+    {
+        return $this->attributes['value'];
     }
 }

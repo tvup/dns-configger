@@ -12,7 +12,7 @@ interface CloudServiceProviderServiceInterface
      */
     public function getDnsRecords(array $wheres = []) : array;
 
-    public function getDnsRecord(int $id) : stdClass;
+    public function getDnsRecord(int|string $id) : stdClass;
 
     public function deleteDnsRecord(stdClass $dnsRecord) : stdClass|null;
 

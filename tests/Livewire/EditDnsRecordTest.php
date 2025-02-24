@@ -56,9 +56,15 @@ class EditDnsRecordTest extends TestCase
 
         $updatedData = [
             'ttl' => 123,
+            'priority' => 1,
+            'port' => 1,
+            'weight' => 1,
         ];
         $test = Livewire::test(EditDnsRecord::class, ['id' => $dnsRecord->id]);
         $test->set('ttl', $updatedData['ttl']);
+        $test->set('priority', $updatedData['priority']);
+        $test->set('port', $updatedData['port']);
+        $test->set('weight', $updatedData['weight']);
         $test->call('update');
         $test->assertDispatched('success', function ($event) {
             $this->assertEquals($event, 'success');

@@ -5,14 +5,14 @@ namespace App\Console\Commands;
 use App\Services\Interfaces\CloudServiceProviderServiceInterface;
 use Illuminate\Console\Command;
 
-class DigitalOceanDnsRetrieve extends Command
+class ProviderDnsRetrieve extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'digitalocean:retrieve-dns';
+    protected $signature = 'provider:retrieve-dns';
 
     /**
      * The console command description.

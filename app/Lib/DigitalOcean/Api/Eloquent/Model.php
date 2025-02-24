@@ -4,6 +4,7 @@ namespace App\Lib\DigitalOcean\Api\Eloquent;
 
 use App\Lib\DigitalOcean\Api\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Model as BaseModel;
+use Illuminate\Support\Arr;
 
 abstract class Model extends BaseModel
 {
@@ -29,7 +30,13 @@ abstract class Model extends BaseModel
 
         if ($this->exists) {
             $query = $this->newBaseQueryBuilder();
-            $dirty = $this->getDirty();
+
+            if ($this instanceof \App\Models\HetznerDnsRecord) {
+                $attributes = $this->attributes;
+                $dirty = Arr::except($attributes, ['created', 'modified']);
+            } else {
+                $dirty = $this->getDirty();
+            }
 
             //Here comes the hack :(
             //Some attributes are needed to be considered dirty, even if they are not.

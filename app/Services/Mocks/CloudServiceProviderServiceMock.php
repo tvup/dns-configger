@@ -22,7 +22,7 @@ class CloudServiceProviderServiceMock implements CloudServiceProviderServiceInte
     /**
      * @throws \Exception
      */
-    public function getDnsRecord(int $id): stdClass
+    public function getDnsRecord(int|string $id): stdClass
     {
         $array = $this->getDnsRecordsOnFile();
         $collection = collect($array);
