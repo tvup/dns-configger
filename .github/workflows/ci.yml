@@ -5,6 +5,15 @@ on: [push]
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        php-versions:
+          - { php: 8.2}
+          - { php: 8.3}
+          - { php: 8.4}
+
+    name: PHP ${{ matrix.php-versions.php }}
 
     steps:
       - uses: actions/checkout@v4
@@ -20,12 +29,12 @@ jobs:
 
       - uses: php-actions/composer@v6
         with:
-          php_version: "8.2"
+          php_version: ${{ matrix.php-versions.php }}
           args: --ignore-platform-req=ext-gd
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: ${{ matrix.php-versions.php }}
           extensions: gd
       - name: Create Directories
         run: mkdir -p storage/framework/cache  && mkdir -p storage/framework/views && mkdir -p storage/framework/sessions && mkdir -p storage/app/test
