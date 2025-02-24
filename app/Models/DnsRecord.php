@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\DnsRecordFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class DnsRecord extends BaseDnsRecord
 {
+    /** @use HasFactory<DnsRecordFactory> */
     use HasFactory;
 
     protected $fillable = [

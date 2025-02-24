@@ -25,7 +25,7 @@ class Builder extends \Illuminate\Database\Query\Builder
      * @param string[] $columns
      * @return Collection<(int|string), \Illuminate\Database\Eloquent\Model>
      */
-    public function get($columns = ['*']): Collection
+    public function get($columns = ['*']): Collection // @phpstan-ignore-line
     {
         $columnIdentifier = is_string($this->from) ? $this->from . '.id' : null;
 
