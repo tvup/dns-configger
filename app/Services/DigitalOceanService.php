@@ -127,7 +127,7 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
         \Illuminate\Http\Client\Response $response,
         int $statusCode,
         string $fallBackMessage,
-        string $attribute = null
+        ?string $attribute = null
     ) {
         $body = $response->body();
 
