@@ -31,12 +31,23 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'provider' => env('DNS_PROVIDER', 'digitalocean'),
+
     'digitalocean' => [
         'api' => [
             'key' => env('DIGITAL_OCEAN_API_KEY'),
         ],
         'domain' => [
             'url' => env('DIGITAL_OCEAN_DOMAIN_URL'),
+        ],
+    ],
+
+    'hetzner' => [
+        'api' => [
+            'key' => env('HETZNER_API_KEY'),
+        ],
+        'zone' => [
+            'id' => env('HETZNER_ZONE_ID'),
         ],
     ],
 ];

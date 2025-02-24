@@ -2,7 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\DnsRecord;
+use App\Models\BaseDnsRecord;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Fluent;
 use Livewire\Attributes\Title;
@@ -12,7 +13,9 @@ use Livewire\Component;
 #[Title('Edit DNS record')]
 class EditDnsRecord extends Component
 {
-    public int $id;
+    public int|string $id;
+
+    private ?BaseDnsRecord $dnsRecord = null;
 
     #[Validate('required|in:A,AAAA,CAA,CNAME,MX,NS,SRV,TXT,SOA', message: ['type.in'=>'Type must be one of A, AAAA, CAA, CNAME, MX, NS, SRV, TXT, SOA'])]
     public string $type = '';
@@ -30,7 +33,7 @@ class EditDnsRecord extends Component
     public ?int $port = null;
 
     #[Validate('required|integer')]
-    public int $ttl = 600;
+    public ?int $ttl = 600;
 
     #[Validate('required_if:type,SRV|nullable|integer')]
     public ?int $weight = null;
@@ -40,6 +43,15 @@ class EditDnsRecord extends Component
 
     #[Validate('required_if:type,CAA|nullable|in:issue,issuewild,iodef', message: ['tag.in'=>'Tag must be one of issue, issuewild, iodef'])]
     public string|null $tag = null;
+
+    private function getDnsRecord(): BaseDnsRecord
+    {
+        if (!$this->dnsRecord) {
+            $this->dnsRecord = App::make(BaseDnsRecord::class);
+        }
+
+        return $this->dnsRecord;
+    }
 
     public function update() : void
     {
@@ -64,21 +76,27 @@ class EditDnsRecord extends Component
             return $input->type == 'AAAA';
         })->validate();
 
-        /** @var DnsRecord $model */ //$model cannot become null. If dnsRecord doesn't exist, an exception is thrown
-        $model = DnsRecord::find($this->id);
+        $model = $this->getDnsRecord();
+
+        $model = $model->find($this->id);
+        assert($model instanceof BaseDnsRecord);
+
         if ($model->type != $this->type) {
             $this->dispatch('error', type: 'error', message: 'Type cannot be changed. <br /><button type="button" class="btn clear">Dismiss</button>', title: 'Error during update');
 
             return;
         }
-        $model->name = $this->name;
-        $model->data = $this->data;
-        $model->priority = $this->priority;
-        $model->port = $this->port;
-        $model->ttl = $this->ttl;
-        $model->weight = $this->weight;
-        $model->flags = $this->flags;
-        $model->tag = $this->tag;
+
+        assert(null !== $this->name);
+        assert(null !== $this->ttl);
+
+        $model->setAttributes([
+            'type' => $this->type,
+            'name' => $this->name,
+            'data' => $this->data,
+            'ttl' => $this->ttl,
+        ]);
+
         try {
             $model->save();
         } catch (\Exception $e) {
@@ -89,34 +107,25 @@ class EditDnsRecord extends Component
         $this->dispatch('success', type: 'success', message: 'Record Updated Successfully.');
         $this->name = $model->name;
         $this->data = $model->data;
-        $this->priority = $model->priority;
-        $this->port = $model->port;
         $this->ttl = $model->ttl;
-        $this->weight = $model->weight;
-        $this->flags = $model->flags;
-        $this->tag = $model->tag;
     }
 
-    public function mount(int $id) : void
+    public function mount(string|int $id) : void
     {
         $this->id = $id;
+        $model = $this->getDnsRecord();
         try {
-            /** @var DnsRecord $model */
-            $model = DnsRecord::find($this->id);
+            $model = $model->find($this->id);
         } catch (\Exception $e) {
             $this->dispatch('error', type: 'error', message: 'Error: ' . $e->getMessage() . ' <br /><button type="button" class="btn clear">Dismiss</button>', title: 'Error during load page');
 
             return;
         }
+        assert($model instanceof BaseDnsRecord);
         $this->type = $model->type;
         $this->name = $model->name;
         $this->data = $model->data;
-        $this->priority = $model->priority;
-        $this->port = $model->port;
-        $this->ttl = $model->ttl;
-        $this->weight = $model->weight;
-        $this->flags = $model->flags;
-        $this->tag = $model->tag;
+        $this->ttl = $model->ttl ?? null;
     }
 
     public function rendering() : void

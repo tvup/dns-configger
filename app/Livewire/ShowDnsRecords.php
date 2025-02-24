@@ -2,7 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\DnsRecord;
+use App\Models\BaseDnsRecord;
+use Illuminate\Support\Facades\App;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\Features\SupportRedirects\Redirector;
@@ -10,10 +11,22 @@ use Livewire\Features\SupportRedirects\Redirector;
 #[Title('List DNS records')]
 class ShowDnsRecords extends Component
 {
-    public function delete(int $dnsRecordId) : void
+    private ?BaseDnsRecord $dnsRecord = null;
+
+    private function getDnsRecord(): BaseDnsRecord
+    {
+        if (!$this->dnsRecord) {
+            $this->dnsRecord = App::make(BaseDnsRecord::class);
+        }
+
+        return $this->dnsRecord;
+    }
+
+    public function delete(int|string $dnsRecordId) : void
     {
         try {
-            $model = DnsRecord::find($dnsRecordId);
+            $model = $this->getDnsRecord();
+            $model = $model->find($dnsRecordId);
             if (!$model) {
                 throw new \Exception('DNS record not found.');
             }
@@ -24,14 +37,14 @@ class ShowDnsRecords extends Component
         }
     }
 
-    public function edit(int $id) : \Illuminate\Http\RedirectResponse|Redirector
+    public function edit(int|string $id) : \Illuminate\Http\RedirectResponse|Redirector
     {
         return redirect('/dns-records/edit/' . $id);
     }
 
     public function render() : \Illuminate\View\View
     {
-        $model = new DnsRecord();
+        $model = $this->getDnsRecord();
         try {
             $collection = $model->all();
         } catch (\Exception $e) {
@@ -43,6 +56,7 @@ class ShowDnsRecords extends Component
         }
 
         return view('livewire.show-dns-records', [
+            'provider' => config('services.provider'),
             'dnsRecords' => $collection,
         ]);
     }

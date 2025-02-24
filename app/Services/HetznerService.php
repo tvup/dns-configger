@@ -6,8 +6,10 @@ use App\Services\Interfaces\CloudServiceProviderServiceInterface;
 use Illuminate\Support\Facades\Http;
 use stdClass;
 
-class DigitalOceanService implements CloudServiceProviderServiceInterface
+class HetznerService implements CloudServiceProviderServiceInterface
 {
+    public const HTTPS_DNS_HETZNER_COM_API = 'https://dns.hetzner.com/api/v1';
+
     /**
      * @param array<int|string, mixed> $wheres
      * @return array|stdClass[]
@@ -16,15 +18,18 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
      */
     public function getDnsRecords(array $wheres = []) : array
     {
-        $queryParameters['per_page'] = '100';
+        $hetznerZoneId = config('services.hetzner.zone.id');
+        $queryParameters['zone_id'] = $hetznerZoneId;
         $queryParameters = array_merge($queryParameters, $wheres);
-        $config = config('services.digitalocean.api.key');
+        $config = config('services.hetzner.api.key');
         if (!is_string($config)) {
-            throw new \Exception('Could not get API key for DigitalOcean');
+            throw new \Exception('Could not get API key for Hetzner');
         }
-        $response = Http::withToken($config)->withQueryParameters($queryParameters)->get('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records', );
+        $response = Http::withHeader('Auth-API-Token', $config)->withQueryParameters($queryParameters)->get(
+            self::HTTPS_DNS_HETZNER_COM_API . '/records'
+        );
 
-        $attribute = 'domain_records';
+        $attribute = 'records';
         $json_decode = $this->getJson_decode($response, 200, 'Error retrieving DNS records', $attribute);
         throw_if(null === $json_decode, new \Exception('Server has unallowed reply'));
 
@@ -33,14 +38,15 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
 
     public function getDnsRecord(int|string $id) : stdClass
     {
-        $config = config('services.digitalocean.api.key');
+        $config = config('services.hetzner.api.key');
         if (!is_string($config)) {
-            throw new \Exception('Could not get API key for DigitalOcean');
+            throw new \Exception('Could not get API key for Hetzner');
         }
-        $response = Http::withToken($config)->get('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $id);
+        $response = Http::withHeader('Auth-API-Token', $config)->get(self::HTTPS_DNS_HETZNER_COM_API . '/records/' . $id);
 
-        $attribute = 'domain_record';
+        $attribute = 'record';
         $json_decode = $this->getJson_decode($response, 200, 'Error retrieving DNS record', $attribute);
+
         throw_if(null === $json_decode, new \Exception('Server has unallowed reply'));
 
         return $json_decode->{$attribute};
@@ -48,42 +54,42 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
 
     public function deleteDnsRecord(stdClass $dnsRecord) : stdClass|null
     {
-        $config = config('services.digitalocean.api.key');
+        $config = config('services.hetzner.api.key');
         if (!is_string($config)) {
-            throw new \Exception('Could not get API key for DigitalOcean');
+            throw new \Exception('Could not get API key for Hetzner');
         }
-        $response = Http::withToken($config)->delete('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $dnsRecord->id);
+        $response = Http::withHeader('Auth-API-Token', $config)->delete(self::HTTPS_DNS_HETZNER_COM_API . '/records/' . $dnsRecord->id);
 
-        $json_decode = $this->getJson_decode($response, 204, 'Error deleting DNS record');
+        $json_decode = $this->getJson_decode($response, 200, 'Error deleting DNS record');
 
         return $json_decode;
     }
 
     public function createDnsRecord(stdClass $dnsRecord): stdClass
     {
-        $priority = null;
-        if (isset($dnsRecord->priority) && $dnsRecord->priority != '') {
-            $priority = $dnsRecord->priority;
-        }
-        $config = config('services.digitalocean.api.key');
+        $config = config('services.hetzner.api.key');
         if (!is_string($config)) {
-            throw new \Exception('Could not get API key for DigitalOcean');
+            throw new \Exception('Could not get API key for Hetzner');
         }
 
-        $response = Http::withToken($config)->post('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records', [
-            'type' => $dnsRecord->type ?? null,
-            'name' => $dnsRecord->name ?? null,
-            'data' => $dnsRecord->data ?? null,
-            'priority' => $priority,
-            'port' => $dnsRecord->port ?? null,
-            'ttl' => $dnsRecord->ttl ?? null,
-            'weight' => $dnsRecord->weight ?? null,
-            'flags' => $dnsRecord->flags ?? null,
-            'tag' => $dnsRecord->tag ?? null,
-        ]);
+        $hetznerZoneId = config('services.hetzner.zone.id');
+        if (!is_string($hetznerZoneId)) {
+            throw new \Exception('Could not get Zone id for Hetzner');
+        }
 
-        $attribute = 'domain_record';
-        $json_decode = $this->getJson_decode($response, 201, 'Error creating DNS record', $attribute);
+        $response = Http::withHeader('Auth-API-Token', $config)->post(
+            self::HTTPS_DNS_HETZNER_COM_API . '/records',
+            [
+                'zone_id' => $hetznerZoneId,
+                'type' => $dnsRecord->type ?? null,
+                'name' => $dnsRecord->name ?? null,
+                'value' => $dnsRecord->value ?? null,
+                'ttl' => $dnsRecord->ttl ?? null,
+            ]
+        );
+
+        $attribute = 'record';
+        $json_decode = $this->getJson_decode($response, 200, 'Error creating DNS record', $attribute);
         throw_if(null === $json_decode, new \Exception('Server has unallowed reply'));
 
         return $json_decode->{$attribute};
@@ -91,28 +97,27 @@ class DigitalOceanService implements CloudServiceProviderServiceInterface
 
     public function updateDnsRecord(stdClass $dnsRecord) : stdClass
     {
-        $priority = null;
-        if (isset($dnsRecord->priority) && $dnsRecord->priority != '') {
-            $priority = $dnsRecord->priority;
-        }
-        $config = config('services.digitalocean.api.key');
+        $config = config('services.hetzner.api.key');
         if (!is_string($config)) {
-            throw new \Exception('Could not get API key for DigitalOcean');
+            throw new \Exception('Could not get API key for Hetzner');
         }
-        $response = Http::withToken($config)->put('https://api.digitalocean.com/v2/domains/' . config('services.digitalocean.domain.url') . '/records/' . $dnsRecord->id, [
+
+        $hetznerZoneId = config('services.hetzner.zone.id');
+        if (!is_string($hetznerZoneId)) {
+            throw new \Exception('Could not get Zone id for Hetzner');
+        }
+
+        $response = Http::withHeader('Auth-API-Token', $config)->put(self::HTTPS_DNS_HETZNER_COM_API . '/records/' . $dnsRecord->id, [
+            'zone_id' => $hetznerZoneId,
             'type' => $dnsRecord->type ?? null,
             'name' => $dnsRecord->name ?? null,
-            'data' => $dnsRecord->data ?? null,
-            'priority' => $priority,
-            'port' => $dnsRecord->port ?? null,
+            'value' => $dnsRecord->value ?? null,
             'ttl' => $dnsRecord->ttl ?? null,
-            'weight' => $dnsRecord->weight ?? null,
-            'flags' => $dnsRecord->flags ?? null,
-            'tag' => $dnsRecord->tag ?? null,
         ]);
 
-        $attribute = 'domain_record';
+        $attribute = 'record';
         $json_decode = $this->getJson_decode($response, 200, 'Error updating DNS record', $attribute);
+
         throw_if(null === $json_decode, new \Exception('Server has unallowed reply'));
 
         return $json_decode->{$attribute};

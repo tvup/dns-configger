@@ -6,6 +6,7 @@ DNS Configger is a tool designed to simplify the management of DNS records, part
 
 - **DNS Record Management**: Manage your DNS records with an intuitive interface.
 - **DigitalOcean Integration**: Seamless integration with DigitalOcean for DNS services.
+- **Hetzner Integration**: Seamless integration with Hetzner for DNS services.
 - **User-Friendly Interface**: Built with Laravel, the tool provides a user-friendly web interface for managing DNS records.
 
 ## Why?
@@ -40,7 +41,8 @@ To get started with the DNS Configger, clone the repository and set up the envir
    ```
    cp .env.example .env
    ```
-   And set your api-key for DigitalOcean and the domain in question.
+   And set your provider (Hetzner or DigitalOcean).
+   Set your api-key for DigitalOcean and the domain in question or Hetzner api key and the zoneid.
    env variables to be filled are mainly
    in the last part of the file.
 

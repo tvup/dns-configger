@@ -2,7 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\DnsRecord;
+use App\Models\BaseDnsRecord;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Fluent;
 use Livewire\Attributes\Title;
@@ -12,7 +13,9 @@ use Livewire\Component;
 #[Title('Create DNS record')]
 class CreateDnsRecord extends Component
 {
-    public int $id;
+    public int|string $id;
+
+    private ?BaseDnsRecord $dnsRecord = null;
 
     #[Validate('required|in:A,AAAA,CAA,CNAME,MX,NS,SRV,TXT', message: ['type.in'=>'Type must be one of A, AAAA, CAA, CNAME, MX, NS, SRV, TXT'])]
     public string $type = '';
@@ -41,6 +44,15 @@ class CreateDnsRecord extends Component
     #[Validate('required_if:type,CAA|nullable|in:issue,issuewild,iodef', message: ['tag.in'=>'Tag must be one of issue, issuewild, iodef'])]
     public string|null $tag = null;
 
+    private function getDnsRecord(): BaseDnsRecord
+    {
+        if (!$this->dnsRecord) {
+            $this->dnsRecord = App::make(BaseDnsRecord::class);
+        }
+
+        return $this->dnsRecord;
+    }
+
     public function save(): void
     {
         $this->validate();
@@ -64,16 +76,15 @@ class CreateDnsRecord extends Component
             return $input->type == 'AAAA';
         })->validate();
 
-        $model = new DnsRecord();
-        $model->type = $this->type;
-        $model->name = $this->name;
-        $model->data = $this->data;
-        $model->priority = $this->priority;
-        $model->port = $this->port;
-        $model->ttl = $this->ttl;
-        $model->weight = $this->weight;
-        $model->flags = $this->flags;
-        $model->tag = $this->tag;
+        $model = $this->getDnsRecord();
+        assert(null !== $this->name);
+        $model->setAttributes([
+            'type' => $this->type,
+            'name' => $this->name,
+            'data' => $this->data,
+            'ttl' => $this->ttl,
+        ]);
+
         try {
             $model->save();
         } catch (\Exception $e) {

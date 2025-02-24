@@ -73,7 +73,7 @@ class Builder extends \Illuminate\Database\Query\Builder
         return true;
     }
 
-    public function insertGetId(array $values, $sequence = null) : int
+    public function insertGetId(array $values, $sequence = null) : string|int
     {
         if (empty($values)) {
             return 0;

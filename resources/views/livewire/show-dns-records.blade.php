@@ -8,13 +8,13 @@
                     <th>Id</th>
                     <th>Type</th>
                     <th>Name</th>
-                    <th>Data</th>
-                    <th>Priority</th>
-                    <th>Port</th>
+                    <th>{{ $provider=='hetzner' ? __('Value') : __('Data') }}</th>
+                    @if($provider=='digitalocean') <th>Priority</th> @endif
+                    @if($provider=='digitalocean') <th>Port</th> @endif
                     <th>TTL</th>
-                    <th>Weight</th>
-                    <th>Flags</th>
-                    <th>Tag</th>
+                    @if($provider=='digitalocean') <th>Weight</th> @endif
+                    @if($provider=='digitalocean') <th>Flags</th> @endif
+                    @if($provider=='digitalocean') <th>Tag</th> @endif
                     <th></th>
                     <th></th>
                 </tr>
@@ -26,20 +26,20 @@
                         <td>{{ $dnsRecord->type }}</td>
                         <td>{{ $dnsRecord->name }}</td>
                         <td>{{ str($dnsRecord->data)->limit(45) }}</td>
-                        <td>{{ $dnsRecord->priority }}</td>
-                        <td>{{ $dnsRecord->port }}</td>
+                        @if($provider=='digitalocean') <td>{{ $dnsRecord->priority }}</td> @endif
+                        @if($provider=='digitalocean') <td>{{ $dnsRecord->port }}</td> @endif
                         <td>{{ $dnsRecord->ttl }}</td>
-                        <td>{{ $dnsRecord->weight }}</td>
-                        <td>{{ $dnsRecord->flags }}</td>
-                        <td>{{ $dnsRecord->tag }}</td>
+                        @if($provider=='digitalocean') <td>{{ $dnsRecord->weight }}</td> @endif
+                        @if($provider=='digitalocean') <td>{{ $dnsRecord->flags }}</td> @endif
+                        @if($provider=='digitalocean') <td>{{ $dnsRecord->tag }}</td> @endif
                         <td>
-                            <button wire:click="edit({{ $dnsRecord->id }})"><x-icon.pencil class="icons"/> Edit</button>
+                            <button wire:click="edit({{ is_string($dnsRecord->id) ? ('\'' . $dnsRecord->id . '\'') : ($dnsRecord->id) }})"><x-icon.pencil class="icons"/> Edit</button>
                         </td>
                         <td>
-                            @if($dnsRecord->type != 'SOA')
+                            @if(!in_array($dnsRecord->type, ['SOA', 'NS']))
                             <button
                                     type="button"
-                                    wire:click="delete({{ $dnsRecord->id }})"
+                                    wire:click="delete({{ is_string($dnsRecord->id) ? ('\'' . $dnsRecord->id . '\'') : ($dnsRecord->id) }})"
                                     wire:confirm="Are you sure you want to delete this record?"
                             >
 
