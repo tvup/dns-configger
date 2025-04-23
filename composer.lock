@@ -1056,16 +1056,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v11.44.2",
+            "version": "v11.44.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "f85216c82cbd38b66d67ebd20ea762cb3751a4b4"
+                "reference": "b0a87fbd13c0b05227a00da7968701f4274e3195"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/f85216c82cbd38b66d67ebd20ea762cb3751a4b4",
-                "reference": "f85216c82cbd38b66d67ebd20ea762cb3751a4b4",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/b0a87fbd13c0b05227a00da7968701f4274e3195",
+                "reference": "b0a87fbd13c0b05227a00da7968701f4274e3195",
                 "shasum": ""
             },
             "require": {
@@ -1267,7 +1267,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-03-12T14:34:30+00:00"
+            "time": "2025-04-23T14:45:24+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -5771,16 +5771,16 @@
         },
         {
             "name": "tvup/laravel-fejlvarp",
-            "version": "v11.1.8",
+            "version": "v11.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tvup/laravel-fejlvarp.git",
-                "reference": "c9519374177fe544cd44ef2ed8b69311c19e8540"
+                "reference": "6fc43caf1c7b7b1a810c7e10930078937b845d1c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tvup/laravel-fejlvarp/zipball/c9519374177fe544cd44ef2ed8b69311c19e8540",
-                "reference": "c9519374177fe544cd44ef2ed8b69311c19e8540",
+                "url": "https://api.github.com/repos/tvup/laravel-fejlvarp/zipball/6fc43caf1c7b7b1a810c7e10930078937b845d1c",
+                "reference": "6fc43caf1c7b7b1a810c7e10930078937b845d1c",
                 "shasum": ""
             },
             "require": {
@@ -5788,7 +5788,7 @@
                 "ext-gd": "*",
                 "ext-mbstring": "*",
                 "ext-pdo": "*",
-                "laravel/framework": "^9.47|^10|^11",
+                "laravel/framework": "^9.47|^10|^11|^12",
                 "nesbot/carbon": "^2|^3",
                 "php": "^8.0.2",
                 "spatie/laravel-package-tools": "^1.16"
@@ -5799,7 +5799,7 @@
                 "guzzlehttp/guzzle": "^7.0",
                 "larastan/larastan": "^v2.4.0|^v3.0.2",
                 "nunomaduro/collision": "^6|^7|^8",
-                "orchestra/testbench": "^7|^8|^9.1",
+                "orchestra/testbench": "^7|^8|^9.1|^10.0.0",
                 "pestphp/pest": "^1.22.1|^2|^3",
                 "pestphp/pest-plugin-laravel": "^1.4|^2|^3",
                 "phpstan/phpstan-phpunit": "^1.3|^2.0",
@@ -5856,7 +5856,7 @@
             ],
             "support": {
                 "issues": "https://github.com/tvup/laravel-fejlvarp/issues",
-                "source": "https://github.com/tvup/laravel-fejlvarp/tree/v11.1.8"
+                "source": "https://github.com/tvup/laravel-fejlvarp/tree/v11.1.9"
             },
             "funding": [
                 {
@@ -5864,7 +5864,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-01T07:33:36+00:00"
+            "time": "2025-04-18T23:37:32+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -6931,16 +6931,16 @@
         },
         {
             "name": "laravel/sail",
-            "version": "v1.41.0",
+            "version": "v1.41.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/sail.git",
-                "reference": "fe1a4ada0abb5e4bd99eb4e4b0d87906c00cdeec"
+                "reference": "e5692510f1ef8e0f5096cde2b885d558f8d86592"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/sail/zipball/fe1a4ada0abb5e4bd99eb4e4b0d87906c00cdeec",
-                "reference": "fe1a4ada0abb5e4bd99eb4e4b0d87906c00cdeec",
+                "url": "https://api.github.com/repos/laravel/sail/zipball/e5692510f1ef8e0f5096cde2b885d558f8d86592",
+                "reference": "e5692510f1ef8e0f5096cde2b885d558f8d86592",
                 "shasum": ""
             },
             "require": {
@@ -6990,7 +6990,7 @@
                 "issues": "https://github.com/laravel/sail/issues",
                 "source": "https://github.com/laravel/sail"
             },
-            "time": "2025-01-24T15:45:36+00:00"
+            "time": "2025-04-22T13:39:39+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -7823,16 +7823,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "11.5.15",
+            "version": "11.5.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "4b6a4ee654e5e0c5e1f17e2f83c0f4c91dee1f9c"
+                "reference": "fc3e887c7f3f9917e1bf61e523413d753db00a17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/4b6a4ee654e5e0c5e1f17e2f83c0f4c91dee1f9c",
-                "reference": "4b6a4ee654e5e0c5e1f17e2f83c0f4c91dee1f9c",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/fc3e887c7f3f9917e1bf61e523413d753db00a17",
+                "reference": "fc3e887c7f3f9917e1bf61e523413d753db00a17",
                 "shasum": ""
             },
             "require": {
@@ -7904,7 +7904,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.15"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.18"
             },
             "funding": [
                 {
@@ -7916,11 +7916,19 @@
                     "type": "github"
                 },
                 {
+                    "url": "https://liberapay.com/sebastianbergmann",
+                    "type": "liberapay"
+                },
+                {
+                    "url": "https://thanks.dev/u/gh/sebastianbergmann",
+                    "type": "thanks_dev"
+                },
+                {
                     "url": "https://tidelift.com/funding/github/packagist/phpunit/phpunit",
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-03-23T16:02:11+00:00"
+            "time": "2025-04-22T06:09:49+00:00"
         },
         {
             "name": "react/cache",
